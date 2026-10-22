@@ -1,0 +1,58 @@
+{
+  "name": "tensorflow-keras-pro-snippets",
+  "publisher": "DevManish007",
+  "displayName": "TensorFlow Keras Pro Snippets",
+  "description": "A practical collection of 163 VS Code snippets for TensorFlow, Keras, deep learning, computer vision, model training, transfer learning, NLP, and time-series workflows.",
+  "icon": "images/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DEVELOPER-MANISH007/tensorflow-keras-snippets"
+  },
+  "version": "0.1.0",
+  "keywords": [
+    "tensorflow",
+    "keras",
+    "python",
+    "snippets",
+    "deep-learning",
+    "machine-learning"
+  ],
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Snippets"
+  ],
+  "contributes": {
+    "snippets": [
+      {
+        "language": "python",
+        "path": "./snippets/python.json"
+      },
+      {
+        "language": "python",
+        "path": "./snippets/datasets.json"
+      },
+      {
+        "language": "python",
+        "path": "./snippets/computer-vision.json"
+      },
+      {
+        "language": "python",
+        "path": "./snippets/training.json"
+      },
+      {
+        "language": "python",
+        "path": "./snippets/nlp-time-series.json"
+      },
+      {
+        "language": "python",
+        "path": "./snippets/advanced.json"
+      },
+      {
+        "language": "python",
+        "path": "./snippets/transfer-learning.json"
+      }
+    ]
+  }
+}

@@ -1,0 +1,321 @@
+{
+  "Custom TensorFlow training step": {
+    "prefix": "tf-gradient-tape",
+    "body": [
+      "optimizer = tf.keras.optimizers.Adam(${1:1e-3})",
+      "for features, labels in ${2:train_ds}.take(${3:1}):",
+      "    with tf.GradientTape() as tape:",
+      "        predictions = ${4:model}(features, training=True)",
+      "        loss = loss_fn(labels, predictions)",
+      "    gradients = tape.gradient(loss, ${4:model}.trainable_variables)",
+      "    optimizer.apply_gradients(zip(gradients, ${4:model}.trainable_variables))",
+      "$0"
+    ],
+    "description": "Apply one custom TensorFlow gradient update using a GradientTape"
+  },
+  "Custom loss function": {
+    "prefix": "keras-custom-loss",
+    "body": [
+      "def ${1:custom_loss}(y_true, y_pred):",
+      "    error = y_true - y_pred",
+      "    return tf.reduce_mean(tf.square(error), axis=-1)",
+      "$0"
+    ],
+    "description": "Define a per-example custom regression loss"
+  },
+  "Custom metric class": {
+    "prefix": "keras-custom-metric",
+    "body": [
+      "class ${1:MeanPrediction}(tf.keras.metrics.Metric):",
+      "    def __init__(self, name=\"mean_prediction\", **kwargs):",
+      "        super().__init__(name=name, **kwargs)",
+      "        self.total = self.add_weight(name=\"total\", initializer=\"zeros\")",
+      "        self.count = self.add_weight(name=\"count\", initializer=\"zeros\")",
+      "",
+      "    def update_state(self, y_true, y_pred, sample_weight=None):",
+      "        values = tf.cast(y_pred, self.dtype)",
+      "        if sample_weight is None:",
+      "            weights = tf.ones_like(values)",
+      "        else:",
+      "            weights = tf.cast(sample_weight, self.dtype)",
+      "            if weights.shape.rank is not None and values.shape.rank is not None:",
+      "                while weights.shape.rank < values.shape.rank:",
+      "                    weights = tf.expand_dims(weights, axis=-1)",
+      "            weights = tf.broadcast_to(weights, tf.shape(values))",
+      "        self.total.assign_add(tf.reduce_sum(values * weights))",
+      "        self.count.assign_add(tf.reduce_sum(weights))",
+      "",
+      "    def result(self):",
+      "        return tf.math.divide_no_nan(self.total, self.count)",
+      "",
+      "    def reset_state(self):",
+      "        self.total.assign(0.0)",
+      "        self.count.assign(0.0)",
+      "$0"
+    ],
+    "description": "Implement a stateful Keras metric with update, result, and reset methods"
+  },
+  "Custom Keras layer": {
+    "prefix": "keras-custom-layer",
+    "body": [
+      "class ${1:ScaleLayer}(tf.keras.layers.Layer):",
+      "    def __init__(self, scale=${2:1.0}, **kwargs):",
+      "        super().__init__(**kwargs)",
+      "        self.scale = scale",
+      "",
+      "    def call(self, inputs):",
+      "        return inputs * self.scale",
+      "",
+      "    def get_config(self):",
+      "        return {**super().get_config(), \"scale\": self.scale}",
+      "$0"
+    ],
+    "description": "Create a serializable custom layer with a configurable scalar"
+  },
+  "Subclassed Keras model": {
+    "prefix": "keras-subclass-model",
+    "body": [
+      "class ${1:MLP}(tf.keras.Model):",
+      "    def __init__(self, units=${2:64}, **kwargs):",
+      "        super().__init__(**kwargs)",
+      "        self.hidden = tf.keras.layers.Dense(units, activation=\"relu\")",
+      "        self.output_layer = tf.keras.layers.Dense(${3:1})",
+      "",
+      "    def call(self, inputs, training=False):",
+      "        x = self.hidden(inputs)",
+      "        return self.output_layer(x)",
+      "$0"
+    ],
+    "description": "Define a model subclass with layers created in the constructor"
+  },
+  "Custom callback": {
+    "prefix": "keras-custom-callback",
+    "body": [
+      "class ${1:LearningRateLogger}(tf.keras.callbacks.Callback):",
+      "    def on_epoch_end(self, epoch, logs=None):",
+      "        learning_rate = self.model.optimizer.learning_rate",
+      "        print(f\"epoch={epoch + 1}, learning_rate={float(learning_rate.numpy()):.6g}\")",
+      "$0"
+    ],
+    "description": "Create a callback that reports the optimizer learning rate after each epoch"
+  },
+  "Override Keras train step": {
+    "prefix": "keras-custom-train-step",
+    "body": [
+      "class ${1:CustomModel}(tf.keras.Model):",
+      "    def train_step(self, data):",
+      "        if len(data) == 3:",
+      "            x, y, sample_weight = data",
+      "        else:",
+      "            x, y = data",
+      "            sample_weight = None",
+      "        with tf.GradientTape() as tape:",
+      "            y_pred = self(x, training=True)",
+      "            loss = self.compute_loss(y=y, y_pred=y_pred, sample_weight=sample_weight)",
+      "        gradients = tape.gradient(loss, self.trainable_variables)",
+      "        self.optimizer.apply_gradients(zip(gradients, self.trainable_variables))",
+      "        for metric in self.metrics:",
+      "            if metric.name == \"loss\":",
+      "                metric.update_state(loss)",
+      "            else:",
+      "                metric.update_state(y, y_pred, sample_weight=sample_weight)",
+      "        return {metric.name: metric.result() for metric in self.metrics}",
+      "$0"
+    ],
+    "description": "Customize a Keras train_step while retaining model.fit and compiled metrics"
+  },
+  "L2 kernel regularization": {
+    "prefix": "keras-l2-regularization",
+    "body": [
+      "layer = tf.keras.layers.Dense(${1:128}, activation=\"relu\", kernel_regularizer=tf.keras.regularizers.L2(${2:1e-4}))",
+      "$0"
+    ],
+    "description": "Add L2 regularization to a layer's kernel"
+  },
+  "Register serializable object": {
+    "prefix": "keras-register-custom",
+    "body": [
+      "@tf.keras.utils.register_keras_serializable(package=${1:\"MyProject\"})",
+      "class ${2:CustomLayer}(tf.keras.layers.Layer):",
+      "    ${3:pass}",
+      "$0"
+    ],
+    "description": "Register a TensorFlow Keras custom object for serialization"
+  },
+  "Save Keras model": {
+    "prefix": "keras-save",
+    "body": [
+      "${1:model}.save(${2:\"model.keras\"})",
+      "$0"
+    ],
+    "description": "Save a complete Keras model in the native .keras format"
+  },
+  "Load Keras model": {
+    "prefix": "keras-load",
+    "body": [
+      "model = tf.keras.models.load_model(${1:\"model.keras\"})",
+      "$0"
+    ],
+    "description": "Load a native Keras model; custom object definitions must be available"
+  },
+  "Save weights": {
+    "prefix": "keras-save-weights",
+    "body": [
+      "${1:model}.save_weights(${2:\"model.weights.h5\"})",
+      "$0"
+    ],
+    "description": "Save weights only using the required .weights.h5 suffix"
+  },
+  "Load weights": {
+    "prefix": "keras-load-weights",
+    "body": [
+      "${1:model}.load_weights(${2:\"model.weights.h5\"})",
+      "$0"
+    ],
+    "description": "Load weights into a compatible built model"
+  },
+  "Export SavedModel for inference": {
+    "prefix": "keras-export-savedmodel",
+    "body": [
+      "# Keras 3 export creates a TensorFlow SavedModel inference artifact, not a .keras training archive.",
+      "${1:model}.export(${2:\"saved_model\"}, format=\"tf_saved_model\")",
+      "$0"
+    ],
+      "description": "Export a TensorFlow tf.keras model using the Keras 3 SavedModel inference API"
+  },
+  "Model input and output shapes": {
+    "prefix": "keras-io-shapes",
+    "body": [
+      "print(\"inputs:\", ${1:model}.inputs)",
+      "print(\"outputs:\", ${1:model}.outputs)",
+      "$0"
+    ],
+    "description": "Inspect model input and output tensors and shapes"
+  },
+  "Check tensor shapes and dtypes": {
+    "prefix": "tf-tensor-info",
+    "body": [
+      "tensor = tf.convert_to_tensor(${1:value})",
+      "print(\"shape:\", tensor.shape, \"dtype:\", tensor.dtype)",
+      "$0"
+    ],
+    "description": "Convert a value to a tensor and inspect its shape and dtype"
+  },
+  "Assert finite tensor": {
+    "prefix": "tf-check-finite",
+    "body": [
+      "tf.debugging.assert_all_finite(${1:tensor}, \"Tensor contains NaN or Inf\")",
+      "$0"
+    ],
+    "description": "Raise an informative error when a tensor contains NaN or infinity"
+  },
+  "Check label and output shapes": {
+    "prefix": "keras-check-label-shapes",
+    "body": [
+      "print(\"labels:\", ${1:labels}.shape)",
+      "print(\"outputs:\", ${2:predictions}.shape)",
+      "tf.debugging.assert_equal(tf.shape(${1:labels})[0], tf.shape(${2:predictions})[0])",
+      "$0"
+    ],
+    "description": "Check that labels and predictions have the same batch dimension"
+  },
+  "Inspect gradient norms": {
+    "prefix": "tf-gradient-norms",
+    "body": [
+      "gradients = tape.gradient(${1:loss}, ${2:model}.trainable_variables)",
+      "for gradient, variable in zip(gradients, ${2:model}.trainable_variables):",
+      "    if gradient is None:",
+      "        print(variable.name, \"NO GRADIENT: check graph connectivity and trainable variables\")",
+      "    else:",
+      "        norm = tf.linalg.global_norm([gradient])",
+      "        tf.debugging.assert_all_finite(norm, \"Non-finite gradient norm\")",
+      "        print(variable.name, norm.numpy())",
+      "$0"
+    ],
+    "description": "Detect disconnected gradients and non-finite gradient norms during a custom training step"
+  },
+  "Distribution strategy scope": {
+    "prefix": "tf-mirrored-strategy",
+    "body": [
+      "strategy = tf.distribute.MirroredStrategy()",
+      "print(\"replicas:\", strategy.num_replicas_in_sync)",
+      "with strategy.scope():",
+      "    model = ${1:build_model}()",
+      "    model.compile(optimizer=\"adam\", loss=${2:loss})",
+      "$0"
+    ],
+    "description": "Create and compile a model inside a multi-device mirrored strategy scope"
+  },
+  "Dynamic loss scaling note": {
+    "prefix": "keras-loss-scaling",
+    "body": [
+      "# Keras mixed_float16 training can automatically wrap optimizers when auto_scale_loss is enabled.",
+      "model.compile(optimizer=${1:optimizer}, loss=${2:loss}, auto_scale_loss=True)",
+      "$0"
+    ],
+    "description": "Enable Keras automatic loss scaling when using a mixed_float16 policy"
+  },
+  "Clear Keras session": {
+    "prefix": "keras-clear-session",
+    "body": [
+      "tf.keras.backend.clear_session()",
+      "$0"
+    ],
+    "description": "Clear Keras global state between repeated model-building experiments"
+  },
+  "Deterministic data shuffle": {
+    "prefix": "tf-deterministic-seed",
+    "body": [
+      "tf.keras.utils.set_random_seed(${1:42})",
+      "options = tf.data.Options()",
+      "options.deterministic = True",
+      "dataset = ${2:dataset}.with_options(options)",
+      "$0"
+    ],
+    "description": "Seed Keras and request deterministic tf.data ordering; exact reproducibility can still vary by hardware, ops, and software versions"
+  },
+  "Enable TensorFlow NaN and infinity checks": {
+    "prefix": "tf-debug-numerics",
+    "body": [
+      "# Enable before the suspicious model or training step; this adds runtime overhead.",
+      "tf.debugging.enable_check_numerics()",
+      "try:",
+      "    ${1:train_step}()",
+      "finally:",
+      "    # Ensure checking is disabled even when the diagnostic raises on NaN/Inf.",
+      "    tf.debugging.disable_check_numerics()",
+      "$0"
+    ],
+    "description": "Fail at the TensorFlow operation that first produces NaN or infinity during a diagnostic run"
+  },
+  "Profile a short Keras training run": {
+    "prefix": "tf-profile-fit",
+    "body": [
+      "from pathlib import Path",
+      "profile_dir = Path(${1:\"logs/profile\"})",
+      "profile_dir.mkdir(parents=True, exist_ok=True)",
+      "# Profile a short, representative run; view traces in TensorBoard's Profile tab.",
+      "with tf.profiler.experimental.Profile(str(profile_dir)):",
+      "    ${2:model}.fit(${3:train_ds}, validation_data=${4:val_ds}, epochs=1, steps_per_epoch=${5:10})",
+      "$0"
+    ],
+    "description": "Capture TensorFlow CPU/GPU and input-pipeline traces for a bounded Keras training run"
+  },
+  "Measure tf.data input wait time": {
+    "prefix": "tf-data-benchmark",
+    "body": [
+      "from time import perf_counter",
+      "# Use a dataset with enough batches; this measures iterator wait time, not model throughput.",
+      "for _ in ${1:dataset}.take(${2:2}):  # Warm-up",
+      "    pass",
+      "started = perf_counter()",
+      "batch_count = 0",
+      "for _ in ${1:dataset}.take(${3:50}):",
+      "    batch_count += 1",
+      "elapsed = perf_counter() - started",
+      "print(f\"{batch_count} batches in {elapsed:.2f}s ({elapsed / max(batch_count, 1):.4f}s/batch)\")",
+      "$0"
+    ],
+    "description": "Roughly measure input iterator wait time after warm-up to help identify a slow tf.data pipeline"
+  }
+}
