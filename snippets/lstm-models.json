@@ -1,0 +1,102 @@
+{
+    "Basic LSTM Model": {
+        "prefix": "lstmmodel",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.LSTM($3),",
+            "    layers.Dense($4, activation=\"$5\")",
+            "])"
+        ],
+        "description": "Create a basic LSTM Sequential model"
+    },
+    "Stacked LSTM": {
+        "prefix": "lstmstacked",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.LSTM($3, return_sequences=True),",
+            "    layers.LSTM($4),",
+            "    layers.Dense($5, activation=\"$6\")",
+            "])"
+        ],
+        "description": "Create a stacked LSTM model"
+    },
+    "Bidirectional LSTM": {
+        "prefix": "lstmbidir",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.Bidirectional(layers.LSTM($3)),",
+            "    layers.Dense($4, activation=\"$5\")",
+            "])"
+        ],
+        "description": "Create a bidirectional LSTM model"
+    },
+    "LSTM with Sequence Output": {
+        "prefix": "lstmreturn",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.LSTM($3, return_sequences=True),",
+            "    layers.Dense($4, activation=\"$5\")",
+            "])"
+        ],
+        "description": "Create an LSTM that returns outputs for all timesteps"
+    },
+    "LSTM with State Output": {
+        "prefix": "lstmstate",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.LSTM($3, return_state=True)",
+            "])"
+        ],
+        "description": "Create an LSTM layer that returns output and states"
+    },
+    "LSTM Encoder": {
+        "prefix": "lstmencoder",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.LSTM($3, return_sequences=False)",
+            "])"
+        ],
+        "description": "Create a simple LSTM encoder that produces a context vector"
+    },
+    "LSTM Decoder": {
+        "prefix": "lstmdecoder",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.LSTM($3, return_sequences=True),",
+            "    layers.TimeDistributed(layers.Dense($4, activation=\"$5\"))",
+            "])"
+        ],
+        "description": "Create a sequence-producing LSTM decoder"
+    },
+    "LSTM Sequence-to-Sequence": {
+        "prefix": "lstmseq2seq",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.LSTM($3, return_sequences=True),",
+            "    layers.LSTM($4, return_sequences=True),",
+            "    layers.TimeDistributed(layers.Dense($5, activation=\"$6\"))",
+            "])"
+        ],
+        "description": "Create a stacked LSTM sequence-to-sequence model"
+    },
+    "LSTM with Regularization": {
+        "prefix": "lstmregularized",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.LSTM($3, dropout=$4, recurrent_dropout=$5),",
+            "    layers.Dropout($6),",
+            "    layers.Dense($7, activation=\"$8\")",
+            "])"
+        ],
+        "description": "Create an LSTM with dropout regularization"
+    }
+}

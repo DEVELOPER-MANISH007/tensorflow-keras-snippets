@@ -1,0 +1,126 @@
+{
+    "Basic CNN 2D": {
+        "prefix": "cnnmodel",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2, $3)),",
+            "    layers.Conv2D($4, (3, 3), activation=\"relu\", padding=\"same\"),",
+            "    layers.MaxPooling2D((2, 2)),",
+            "    layers.Flatten(),",
+            "    layers.Dense($5, activation=\"relu\"),",
+            "    layers.Dense($6, activation=\"$7\")",
+            "])"
+        ],
+        "description": "Create a basic 2D CNN Sequential model"
+    },
+    "1D CNN": {
+        "prefix": "cnn1d",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.Conv1D($3, kernel_size=$4, activation=\"relu\", padding=\"same\"),",
+            "    layers.MaxPooling1D(pool_size=$5),",
+            "    layers.GlobalAveragePooling1D(),",
+            "    layers.Dense($6, activation=\"$7\")",
+            "])"
+        ],
+        "description": "Create a 1D CNN for sequence or signal data"
+    },
+    "2D CNN": {
+        "prefix": "cnn2d",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2, $3)),",
+            "    layers.Conv2D($4, (3, 3), activation=\"relu\"),",
+            "    layers.MaxPooling2D((2, 2)),",
+            "    layers.Conv2D($5, (3, 3), activation=\"relu\"),",
+            "    layers.MaxPooling2D((2, 2)),",
+            "    layers.Flatten(),",
+            "    layers.Dense($6, activation=\"relu\"),",
+            "    layers.Dense($7, activation=\"$8\")",
+            "])"
+        ],
+        "description": "Create a two-block 2D CNN"
+    },
+    "3D CNN": {
+        "prefix": "cnn3d",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2, $3, $4)),",
+            "    layers.Conv3D($5, (3, 3, 3), activation=\"relu\", padding=\"same\"),",
+            "    layers.MaxPooling3D((2, 2, 2)),",
+            "    layers.GlobalAveragePooling3D(),",
+            "    layers.Dense($6, activation=\"$7\")",
+            "])"
+        ],
+        "description": "Create a 3D CNN for volumetric or video data"
+    },
+    "CNN Image Classifier": {
+        "prefix": "cnnclassifier",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2, $3)),",
+            "    layers.Rescaling(1./255),",
+            "    layers.Conv2D($4, 3, activation=\"relu\"),",
+            "    layers.MaxPooling2D(),",
+            "    layers.Conv2D($5, 3, activation=\"relu\"),",
+            "    layers.MaxPooling2D(),",
+            "    layers.GlobalAveragePooling2D(),",
+            "    layers.Dense($6, activation=\"relu\"),",
+            "    layers.Dropout($7),",
+            "    layers.Dense($8, activation=\"$9\")",
+            "])"
+        ],
+        "description": "Create a CNN image classification model"
+    },
+    "Stacked CNN": {
+        "prefix": "cnnstacked",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2, $3)),",
+            "    layers.Conv2D($4, 3, activation=\"relu\", padding=\"same\"),",
+            "    layers.Conv2D($5, 3, activation=\"relu\", padding=\"same\"),",
+            "    layers.MaxPooling2D(),",
+            "    layers.Conv2D($6, 3, activation=\"relu\", padding=\"same\"),",
+            "    layers.GlobalAveragePooling2D(),",
+            "    layers.Dense($7, activation=\"$8\")",
+            "])"
+        ],
+        "description": "Create a stacked Conv2D model"
+    },
+    "CNN with Regularization": {
+        "prefix": "cnnregularized",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2, $3)),",
+            "    layers.Conv2D($4, 3, padding=\"same\", use_bias=False),",
+            "    layers.BatchNormalization(),",
+            "    layers.Activation(\"relu\"),",
+            "    layers.MaxPooling2D(),",
+            "    layers.Dropout($5),",
+            "    layers.GlobalAveragePooling2D(),",
+            "    layers.Dense($6, activation=\"$7\")",
+            "])"
+        ],
+        "description": "Create a CNN with batch normalization and dropout"
+    },
+    "CNN Transfer Learning Feature Extractor": {
+        "prefix": "cnntransfer",
+        "body": [
+            "base_model = keras.applications.MobileNetV2(",
+            "    input_shape=($1, $2, $3),",
+            "    include_top=False,",
+            "    weights=\"imagenet\"",
+            ")",
+            "base_model.trainable = False",
+            "",
+            "model = keras.Sequential([",
+            "    base_model,",
+            "    layers.GlobalAveragePooling2D(),",
+            "    layers.Dropout($4),",
+            "    layers.Dense($5, activation=\"$6\")",
+            "])"
+        ],
+        "description": "Create a Sequential transfer-learning classifier using MobileNetV2"
+    }
+}

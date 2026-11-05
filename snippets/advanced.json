@@ -1,321 +1,1211 @@
 {
-  "Custom TensorFlow training step": {
-    "prefix": "tf-gradient-tape",
+  "Custom Layer": {
+    "prefix": "adv_customlayer",
     "body": [
-      "optimizer = tf.keras.optimizers.Adam(${1:1e-3})",
-      "for features, labels in ${2:train_ds}.take(${3:1}):",
-      "    with tf.GradientTape() as tape:",
-      "        predictions = ${4:model}(features, training=True)",
-      "        loss = loss_fn(labels, predictions)",
-      "    gradients = tape.gradient(loss, ${4:model}.trainable_variables)",
-      "    optimizer.apply_gradients(zip(gradients, ${4:model}.trainable_variables))",
-      "$0"
-    ],
-    "description": "Apply one custom TensorFlow gradient update using a GradientTape"
-  },
-  "Custom loss function": {
-    "prefix": "keras-custom-loss",
-    "body": [
-      "def ${1:custom_loss}(y_true, y_pred):",
-      "    error = y_true - y_pred",
-      "    return tf.reduce_mean(tf.square(error), axis=-1)",
-      "$0"
-    ],
-    "description": "Define a per-example custom regression loss"
-  },
-  "Custom metric class": {
-    "prefix": "keras-custom-metric",
-    "body": [
-      "class ${1:MeanPrediction}(tf.keras.metrics.Metric):",
-      "    def __init__(self, name=\"mean_prediction\", **kwargs):",
-      "        super().__init__(name=name, **kwargs)",
-      "        self.total = self.add_weight(name=\"total\", initializer=\"zeros\")",
-      "        self.count = self.add_weight(name=\"count\", initializer=\"zeros\")",
-      "",
-      "    def update_state(self, y_true, y_pred, sample_weight=None):",
-      "        values = tf.cast(y_pred, self.dtype)",
-      "        if sample_weight is None:",
-      "            weights = tf.ones_like(values)",
-      "        else:",
-      "            weights = tf.cast(sample_weight, self.dtype)",
-      "            if weights.shape.rank is not None and values.shape.rank is not None:",
-      "                while weights.shape.rank < values.shape.rank:",
-      "                    weights = tf.expand_dims(weights, axis=-1)",
-      "            weights = tf.broadcast_to(weights, tf.shape(values))",
-      "        self.total.assign_add(tf.reduce_sum(values * weights))",
-      "        self.count.assign_add(tf.reduce_sum(weights))",
-      "",
-      "    def result(self):",
-      "        return tf.math.divide_no_nan(self.total, self.count)",
-      "",
-      "    def reset_state(self):",
-      "        self.total.assign(0.0)",
-      "        self.count.assign(0.0)",
-      "$0"
-    ],
-    "description": "Implement a stateful Keras metric with update, result, and reset methods"
-  },
-  "Custom Keras layer": {
-    "prefix": "keras-custom-layer",
-    "body": [
-      "class ${1:ScaleLayer}(tf.keras.layers.Layer):",
-      "    def __init__(self, scale=${2:1.0}, **kwargs):",
+      "class ${1:CustomLayer}(keras.layers.Layer):",
+      "    def __init__(self, units, **kwargs):",
       "        super().__init__(**kwargs)",
-      "        self.scale = scale",
+      "        self.units = units",
+      "",
+      "    def build(self, input_shape):",
+      "        self.w = self.add_weight(",
+      "            name='kernel', shape=(input_shape[-1], self.units),",
+      "            initializer='glorot_uniform', trainable=True",
+      "        )",
+      "        self.b = self.add_weight(",
+      "            name='bias', shape=(self.units,), initializer='zeros', trainable=True",
+      "        )",
       "",
       "    def call(self, inputs):",
-      "        return inputs * self.scale",
+      "        return keras.ops.matmul(inputs, self.w) + self.b",
       "",
       "    def get_config(self):",
-      "        return {**super().get_config(), \"scale\": self.scale}",
-      "$0"
+      "        config = super().get_config()",
+      "        config.update({'units': self.units})",
+      "        return config"
     ],
-    "description": "Create a serializable custom layer with a configurable scalar"
+    "description": "Create a serializable custom Keras layer"
   },
-  "Subclassed Keras model": {
-    "prefix": "keras-subclass-model",
+  "Custom Model Subclass": {
+    "prefix": "adv_modelclass",
     "body": [
-      "class ${1:MLP}(tf.keras.Model):",
-      "    def __init__(self, units=${2:64}, **kwargs):",
+      "class ${1:CustomModel}(keras.Model):",
+      "    def __init__(self, num_classes, **kwargs):",
       "        super().__init__(**kwargs)",
-      "        self.hidden = tf.keras.layers.Dense(units, activation=\"relu\")",
-      "        self.output_layer = tf.keras.layers.Dense(${3:1})",
+      "        self.hidden = keras.layers.Dense(128, activation='relu')",
+      "        self.output_layer = keras.layers.Dense(num_classes, activation='softmax')",
       "",
       "    def call(self, inputs, training=False):",
       "        x = self.hidden(inputs)",
-      "        return self.output_layer(x)",
-      "$0"
+      "        return self.output_layer(x)"
     ],
-    "description": "Define a model subclass with layers created in the constructor"
+    "description": "Build a model by subclassing keras.Model"
   },
-  "Custom callback": {
-    "prefix": "keras-custom-callback",
+  "Custom Train Step": {
+    "prefix": "adv_trainstep",
     "body": [
-      "class ${1:LearningRateLogger}(tf.keras.callbacks.Callback):",
-      "    def on_epoch_end(self, epoch, logs=None):",
-      "        learning_rate = self.model.optimizer.learning_rate",
-      "        print(f\"epoch={epoch + 1}, learning_rate={float(learning_rate.numpy()):.6g}\")",
-      "$0"
-    ],
-    "description": "Create a callback that reports the optimizer learning rate after each epoch"
-  },
-  "Override Keras train step": {
-    "prefix": "keras-custom-train-step",
-    "body": [
-      "class ${1:CustomModel}(tf.keras.Model):",
+      "class ${1:CustomTrainer}(keras.Model):",
       "    def train_step(self, data):",
-      "        if len(data) == 3:",
-      "            x, y, sample_weight = data",
-      "        else:",
-      "            x, y = data",
-      "            sample_weight = None",
+      "        x, y = data",
       "        with tf.GradientTape() as tape:",
       "            y_pred = self(x, training=True)",
-      "            loss = self.compute_loss(y=y, y_pred=y_pred, sample_weight=sample_weight)",
+      "            loss = self.compute_loss(y=y, y_pred=y_pred)",
       "        gradients = tape.gradient(loss, self.trainable_variables)",
       "        self.optimizer.apply_gradients(zip(gradients, self.trainable_variables))",
-      "        for metric in self.metrics:",
-      "            if metric.name == \"loss\":",
-      "                metric.update_state(loss)",
-      "            else:",
-      "                metric.update_state(y, y_pred, sample_weight=sample_weight)",
-      "        return {metric.name: metric.result() for metric in self.metrics}",
-      "$0"
+      "        return {metric.name: metric.result() for metric in self.metrics}"
     ],
-    "description": "Customize a Keras train_step while retaining model.fit and compiled metrics"
+    "description": "Override train_step for custom training logic"
   },
-  "L2 kernel regularization": {
-    "prefix": "keras-l2-regularization",
+  "Autoencoder": {
+    "prefix": "adv_autoencoder",
     "body": [
-      "layer = tf.keras.layers.Dense(${1:128}, activation=\"relu\", kernel_regularizer=tf.keras.regularizers.L2(${2:1e-4}))",
-      "$0"
+      "inputs = keras.Input(shape=(${1:784},))",
+      "encoded = keras.layers.Dense(${2:128}, activation='relu')(inputs)",
+      "latent = keras.layers.Dense(${3:32}, activation='relu', name='latent')(encoded)",
+      "decoded = keras.layers.Dense(${4:128}, activation='relu')(latent)",
+      "outputs = keras.layers.Dense(${1:784}, activation='sigmoid')(decoded)",
+      "autoencoder = keras.Model(inputs, outputs, name='autoencoder')",
+      "autoencoder.compile(optimizer='adam', loss='binary_crossentropy')"
     ],
-    "description": "Add L2 regularization to a layer's kernel"
+    "description": "Create a basic dense autoencoder"
   },
-  "Register serializable object": {
-    "prefix": "keras-register-custom",
+  "Encoder Model": {
+    "prefix": "adv_encoder",
     "body": [
-      "@tf.keras.utils.register_keras_serializable(package=${1:\"MyProject\"})",
-      "class ${2:CustomLayer}(tf.keras.layers.Layer):",
-      "    ${3:pass}",
-      "$0"
+      "encoder = keras.Model(",
+      "    inputs=autoencoder.input,",
+      "    outputs=autoencoder.get_layer('latent').output,",
+      "    name='encoder'",
+      ")"
     ],
-    "description": "Register a TensorFlow Keras custom object for serialization"
+    "description": "Extract the encoder from an autoencoder"
   },
-  "Save Keras model": {
-    "prefix": "keras-save",
+  "Decoder Model": {
+    "prefix": "adv_decoder",
     "body": [
-      "${1:model}.save(${2:\"model.keras\"})",
-      "$0"
+      "latent_inputs = keras.Input(shape=(${1:32},))",
+      "x = keras.layers.Dense(${2:128}, activation='relu')(latent_inputs)",
+      "decoder_outputs = keras.layers.Dense(${3:784}, activation='sigmoid')(x)",
+      "decoder = keras.Model(latent_inputs, decoder_outputs, name='decoder')"
     ],
-    "description": "Save a complete Keras model in the native .keras format"
+    "description": "Build a decoder model from latent vectors"
   },
-  "Load Keras model": {
-    "prefix": "keras-load",
+  "Denoising Autoencoder": {
+    "prefix": "adv_denoiseae",
     "body": [
-      "model = tf.keras.models.load_model(${1:\"model.keras\"})",
-      "$0"
+      "noise = keras.random.normal(shape=keras.ops.shape(x), mean=0.0, stddev=${1:0.2})",
+      "x_noisy = keras.ops.clip(x + noise, 0.0, 1.0)",
+      "denoising_autoencoder = keras.Model(input_img, autoencoder(input_img))",
+      "denoising_autoencoder.compile(optimizer='adam', loss='mse')"
     ],
-    "description": "Load a native Keras model; custom object definitions must be available"
+    "description": "Denoising autoencoder training setup; define input_img, x and autoencoder"
   },
-  "Save weights": {
-    "prefix": "keras-save-weights",
+  "Variational Autoencoder Sampling": {
+    "prefix": "adv_vaesample",
     "body": [
-      "${1:model}.save_weights(${2:\"model.weights.h5\"})",
-      "$0"
+      "def sampling(args):",
+      "    z_mean, z_log_var = args",
+      "    epsilon = keras.random.normal(shape=keras.ops.shape(z_mean))",
+      "    return z_mean + keras.ops.exp(0.5 * z_log_var) * epsilon"
     ],
-    "description": "Save weights only using the required .weights.h5 suffix"
+    "description": "Reparameterization sampling function for a VAE"
   },
-  "Load weights": {
-    "prefix": "keras-load-weights",
+  "GAN Generator": {
+    "prefix": "adv_gangenerator",
     "body": [
-      "${1:model}.load_weights(${2:\"model.weights.h5\"})",
-      "$0"
+      "def build_generator(latent_dim=${1:100}):",
+      "    return keras.Sequential([",
+      "        keras.layers.Input(shape=(latent_dim,)),",
+      "        keras.layers.Dense(7 * 7 * 128, activation='relu'),",
+      "        keras.layers.Reshape((7, 7, 128)),",
+      "        keras.layers.Conv2DTranspose(128, 4, strides=2, padding='same', activation='relu'),",
+      "        keras.layers.Conv2DTranspose(1, 4, strides=2, padding='same', activation='tanh')",
+      "    ], name='generator')"
     ],
-    "description": "Load weights into a compatible built model"
+    "description": "Build a simple DCGAN generator"
   },
-  "Export SavedModel for inference": {
-    "prefix": "keras-export-savedmodel",
+  "GAN Discriminator": {
+    "prefix": "adv_gandiscriminator",
     "body": [
-      "# Keras 3 export creates a TensorFlow SavedModel inference artifact, not a .keras training archive.",
-      "${1:model}.export(${2:\"saved_model\"}, format=\"tf_saved_model\")",
-      "$0"
+      "def build_discriminator(input_shape=(${1:28}, ${2:28}, ${3:1})): ",
+      "    return keras.Sequential([",
+      "        keras.layers.Input(shape=input_shape),",
+      "        keras.layers.Conv2D(64, 4, strides=2, padding='same'),",
+      "        keras.layers.LeakyReLU(negative_slope=0.2),",
+      "        keras.layers.Dropout(0.3),",
+      "        keras.layers.Flatten(),",
+      "        keras.layers.Dense(1, activation='sigmoid')",
+      "    ], name='discriminator')"
     ],
-      "description": "Export a TensorFlow tf.keras model using the Keras 3 SavedModel inference API"
+    "description": "Build a simple GAN discriminator"
   },
-  "Model input and output shapes": {
-    "prefix": "keras-io-shapes",
+  "GAN Combined Model": {
+    "prefix": "adv_gancompile",
     "body": [
-      "print(\"inputs:\", ${1:model}.inputs)",
-      "print(\"outputs:\", ${1:model}.outputs)",
-      "$0"
+      "generator = build_generator()",
+      "discriminator = build_discriminator()",
+      "discriminator.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])",
+      "discriminator.trainable = False",
+      "gan_input = keras.Input(shape=(${1:100},))",
+      "gan_output = discriminator(generator(gan_input))",
+      "gan = keras.Model(gan_input, gan_output, name='gan')",
+      "gan.compile(optimizer='adam', loss='binary_crossentropy')"
     ],
-    "description": "Inspect model input and output tensors and shapes"
+    "description": "Connect generator and frozen discriminator into GAN"
   },
-  "Check tensor shapes and dtypes": {
-    "prefix": "tf-tensor-info",
+  "Siamese Network": {
+    "prefix": "adv_siamese",
     "body": [
-      "tensor = tf.convert_to_tensor(${1:value})",
-      "print(\"shape:\", tensor.shape, \"dtype:\", tensor.dtype)",
-      "$0"
+      "def build_embedding(input_shape=(${1:128}, ${2:128}, ${3:3})): ",
+      "    inputs = keras.Input(shape=input_shape)",
+      "    x = keras.layers.Conv2D(32, 3, activation='relu')(inputs)",
+      "    x = keras.layers.MaxPooling2D()(x)",
+      "    x = keras.layers.Conv2D(64, 3, activation='relu')(x)",
+      "    x = keras.layers.GlobalAveragePooling2D()(x)",
+      "    outputs = keras.layers.Dense(128)(x)",
+      "    return keras.Model(inputs, outputs, name='embedding_model')",
+      "",
+      "embedding_model = build_embedding()",
+      "input_a = keras.Input(shape=(${1:128}, ${2:128}, ${3:3}))",
+      "input_b = keras.Input(shape=(${1:128}, ${2:128}, ${3:3}))",
+      "embedding_a = embedding_model(input_a)",
+      "embedding_b = embedding_model(input_b)",
+      "distance = keras.layers.Lambda(lambda v: keras.ops.sqrt(keras.ops.sum(keras.ops.square(v[0] - v[1]), axis=1, keepdims=True)))([embedding_a, embedding_b])",
+      "siamese_model = keras.Model([input_a, input_b], distance)"
     ],
-    "description": "Convert a value to a tensor and inspect its shape and dtype"
+    "description": "Create a shared-weight Siamese network"
   },
-  "Assert finite tensor": {
-    "prefix": "tf-check-finite",
+  "Transformer Encoder Block": {
+    "prefix": "adv_transformerencoder",
     "body": [
-      "tf.debugging.assert_all_finite(${1:tensor}, \"Tensor contains NaN or Inf\")",
-      "$0"
+      "def transformer_encoder(inputs, head_size=${1:64}, num_heads=${2:4}, ff_dim=${3:128}, dropout=${4:0.1}):",
+      "    x = keras.layers.MultiHeadAttention(num_heads=num_heads, key_dim=head_size, dropout=dropout)(inputs, inputs)",
+      "    x = keras.layers.Dropout(dropout)(x)",
+      "    x = keras.layers.LayerNormalization(epsilon=1e-6)(inputs + x)",
+      "    ff = keras.layers.Dense(ff_dim, activation='gelu')(x)",
+      "    ff = keras.layers.Dense(keras.ops.shape(inputs)[-1])(ff)",
+      "    ff = keras.layers.Dropout(dropout)(ff)",
+      "    return keras.layers.LayerNormalization(epsilon=1e-6)(x + ff)"
     ],
-    "description": "Raise an informative error when a tensor contains NaN or infinity"
+    "description": "Transformer encoder block with attention and feed-forward layers"
   },
-  "Check label and output shapes": {
-    "prefix": "keras-check-label-shapes",
+  "Positional Embedding": {
+    "prefix": "adv_positionembed",
     "body": [
-      "print(\"labels:\", ${1:labels}.shape)",
-      "print(\"outputs:\", ${2:predictions}.shape)",
-      "tf.debugging.assert_equal(tf.shape(${1:labels})[0], tf.shape(${2:predictions})[0])",
-      "$0"
+      "class ${1:PositionalEmbedding}(keras.layers.Layer):",
+      "    def __init__(self, sequence_length, vocab_size, embed_dim, **kwargs):",
+      "        super().__init__(**kwargs)",
+      "        self.token_emb = keras.layers.Embedding(input_dim=vocab_size, output_dim=embed_dim)",
+      "        self.pos_emb = keras.layers.Embedding(input_dim=sequence_length, output_dim=embed_dim)",
+      "",
+      "    def call(self, inputs):",
+      "        length = keras.ops.shape(inputs)[-1]",
+      "        positions = keras.ops.arange(start=0, stop=length, step=1)",
+      "        return self.token_emb(inputs) + self.pos_emb(positions)"
     ],
-    "description": "Check that labels and predictions have the same batch dimension"
+    "description": "Learned token and positional embeddings for transformers"
   },
-  "Inspect gradient norms": {
-    "prefix": "tf-gradient-norms",
+  "Transformer Decoder Causal Mask": {
+    "prefix": "adv_causalmask",
     "body": [
-      "gradients = tape.gradient(${1:loss}, ${2:model}.trainable_variables)",
-      "for gradient, variable in zip(gradients, ${2:model}.trainable_variables):",
-      "    if gradient is None:",
-      "        print(variable.name, \"NO GRADIENT: check graph connectivity and trainable variables\")",
-      "    else:",
-      "        norm = tf.linalg.global_norm([gradient])",
-      "        tf.debugging.assert_all_finite(norm, \"Non-finite gradient norm\")",
-      "        print(variable.name, norm.numpy())",
-      "$0"
+      "causal_mask = keras.ops.triu(",
+      "    keras.ops.ones(( ${1:sequence_length}, ${1:sequence_length} ), dtype='int32'),",
+      "    k=1",
+      ") == 0"
     ],
-    "description": "Detect disconnected gradients and non-finite gradient norms during a custom training step"
+    "description": "Create a lower-triangular causal attention mask"
   },
-  "Distribution strategy scope": {
-    "prefix": "tf-mirrored-strategy",
+  "Cross Attention": {
+    "prefix": "adv_crossattention",
+    "body": [
+      "cross_attention = keras.layers.MultiHeadAttention(",
+      "    num_heads=${1:4}, key_dim=${2:64}",
+      ")(query=decoder_sequence, value=encoder_sequence, key=encoder_sequence)",
+      "decoder_output = keras.layers.LayerNormalization()(decoder_sequence + cross_attention)"
+    ],
+    "description": "Cross-attention from decoder sequence to encoder sequence"
+  },
+  "Residual Block": {
+    "prefix": "adv_residualblock",
+    "body": [
+      "def residual_block(x, filters, stride=1):",
+      "    shortcut = x",
+      "    y = keras.layers.Conv2D(filters, 3, strides=stride, padding='same', use_bias=False)(x)",
+      "    y = keras.layers.BatchNormalization()(y)",
+      "    y = keras.layers.ReLU()(y)",
+      "    y = keras.layers.Conv2D(filters, 3, padding='same', use_bias=False)(y)",
+      "    y = keras.layers.BatchNormalization()(y)",
+      "    if stride != 1 or x.shape[-1] != filters:",
+      "        shortcut = keras.layers.Conv2D(filters, 1, strides=stride, padding='same', use_bias=False)(shortcut)",
+      "        shortcut = keras.layers.BatchNormalization()(shortcut)",
+      "    return keras.layers.ReLU()(keras.layers.Add()([shortcut, y]))"
+    ],
+    "description": "Reusable ResNet-style residual block"
+  },
+  "Inception Block": {
+    "prefix": "adv_inceptionblock",
+    "body": [
+      "def inception_block(x, filters):",
+      "    f1, f3, f5, fp = filters",
+      "    branch1 = keras.layers.Conv2D(f1, 1, padding='same', activation='relu')(x)",
+      "    branch3 = keras.layers.Conv2D(f3, 3, padding='same', activation='relu')(x)",
+      "    branch5 = keras.layers.Conv2D(f5, 5, padding='same', activation='relu')(x)",
+      "    branch_pool = keras.layers.MaxPooling2D(3, strides=1, padding='same')(x)",
+      "    branch_pool = keras.layers.Conv2D(fp, 1, padding='same', activation='relu')(branch_pool)",
+      "    return keras.layers.Concatenate()([branch1, branch3, branch5, branch_pool])"
+    ],
+    "description": "Inception-style multi-branch convolution block"
+  },
+  "UNet Convolution Block": {
+    "prefix": "adv_unetblock",
+    "body": [
+      "def conv_block(x, filters):",
+      "    x = keras.layers.Conv2D(filters, 3, padding='same', activation='relu')(x)",
+      "    x = keras.layers.BatchNormalization()(x)",
+      "    x = keras.layers.Conv2D(filters, 3, padding='same', activation='relu')(x)",
+      "    return keras.layers.BatchNormalization()(x)"
+    ],
+    "description": "Reusable U-Net double-convolution block"
+  },
+  "UNet Up Block": {
+    "prefix": "adv_unetup",
+    "body": [
+      "def up_block(x, skip, filters):",
+      "    x = keras.layers.Conv2DTranspose(filters, 2, strides=2, padding='same')(x)",
+      "    x = keras.layers.Concatenate()([x, skip])",
+      "    return conv_block(x, filters)"
+    ],
+    "description": "U-Net upsampling block with skip connection"
+  },
+  "Knowledge Distillation Loss": {
+    "prefix": "adv_distillloss",
+    "body": [
+      "def distillation_loss(y_true, student_logits, teacher_logits, temperature=${1:3.0}, alpha=${2:0.5}):",
+      "    hard_loss = keras.losses.categorical_crossentropy(y_true, student_logits, from_logits=True)",
+      "    teacher_probs = keras.ops.softmax(teacher_logits / temperature, axis=-1)",
+      "    student_probs = keras.ops.softmax(student_logits / temperature, axis=-1)",
+      "    soft_loss = keras.losses.kullback_leibler_divergence(teacher_probs, student_probs)",
+      "    return alpha * hard_loss + (1.0 - alpha) * (temperature ** 2) * soft_loss"
+    ],
+    "description": "Combine hard-label and teacher-student distillation losses"
+  },
+  "Freeze Backbone": {
+    "prefix": "adv_freezebackbone",
+    "body": [
+      "for layer in backbone.layers:",
+      "    layer.trainable = False"
+    ],
+    "description": "Freeze pretrained backbone layers"
+  },
+  "Unfreeze Top Layers": {
+    "prefix": "adv_unfreezetop",
+    "body": [
+      "for layer in backbone.layers[:-${1:20}]:",
+      "    layer.trainable = False",
+      "for layer in backbone.layers[-${1:20}:]:",
+      "    layer.trainable = True"
+    ],
+    "description": "Unfreeze only top layers for fine-tuning"
+  },
+  "Gradual Unfreezing": {
+    "prefix": "adv_gradualunfreeze",
+    "body": [
+      "backbone.trainable = True",
+      "for layer in backbone.layers:",
+      "    layer.trainable = False",
+      "for layer in backbone.layers[-${1:10}:]:",
+      "    layer.trainable = True",
+      "model.compile(optimizer=keras.optimizers.Adam(${2:1e-5}), loss=${3:'categorical_crossentropy'}, metrics=['accuracy'])"
+    ],
+    "description": "Gradually unfreeze top backbone layers and recompile"
+  },
+  "Exponential Moving Average": {
+    "prefix": "adv_ema",
+    "body": [
+      "ema = keras.optimizers.schedules.ExponentialDecay(",
+      "    initial_learning_rate=${1:1e-3}, decay_steps=${2:1000}, decay_rate=${3:0.96}",
+      ")",
+      "optimizer = keras.optimizers.Adam(learning_rate=ema)"
+    ],
+    "description": "Use exponential decay schedule for optimizer learning rate"
+  },
+  "Distributed Mirrored Strategy": {
+    "prefix": "adv_mirroredstrategy",
     "body": [
       "strategy = tf.distribute.MirroredStrategy()",
-      "print(\"replicas:\", strategy.num_replicas_in_sync)",
+      "print('Number of devices:', strategy.num_replicas_in_sync)",
       "with strategy.scope():",
       "    model = ${1:build_model}()",
-      "    model.compile(optimizer=\"adam\", loss=${2:loss})",
-      "$0"
+      "    model.compile(optimizer='adam', loss=${2:'sparse_categorical_crossentropy'}, metrics=['accuracy'])"
     ],
-    "description": "Create and compile a model inside a multi-device mirrored strategy scope"
+    "description": "Train across multiple GPUs with MirroredStrategy"
   },
-  "Dynamic loss scaling note": {
-    "prefix": "keras-loss-scaling",
+  "TPU Strategy": {
+    "prefix": "adv_tpustrategy",
     "body": [
-      "# Keras mixed_float16 training can automatically wrap optimizers when auto_scale_loss is enabled.",
-      "model.compile(optimizer=${1:optimizer}, loss=${2:loss}, auto_scale_loss=True)",
-      "$0"
+      "resolver = tf.distribute.cluster_resolver.TPUClusterResolver()",
+      "tf.config.experimental_connect_to_cluster(resolver)",
+      "tf.tpu.experimental.initialize_tpu_system(resolver)",
+      "strategy = tf.distribute.TPUStrategy(resolver)",
+      "with strategy.scope():",
+      "    model = ${1:build_model}()",
+      "    model.compile(optimizer='adam', loss=${2:'sparse_categorical_crossentropy'}, metrics=['accuracy'])"
     ],
-    "description": "Enable Keras automatic loss scaling when using a mixed_float16 policy"
+    "description": "Initialize TPU and create model in TPU strategy scope"
   },
-  "Clear Keras session": {
-    "prefix": "keras-clear-session",
+  "Multi Worker Strategy": {
+    "prefix": "adv_multiworker",
     "body": [
-      "tf.keras.backend.clear_session()",
-      "$0"
+      "strategy = tf.distribute.MultiWorkerMirroredStrategy()",
+      "with strategy.scope():",
+      "    model = ${1:build_model}()",
+      "    model.compile(optimizer='adam', loss=${2:'sparse_categorical_crossentropy'}, metrics=['accuracy'])"
     ],
-    "description": "Clear Keras global state between repeated model-building experiments"
+    "description": "Set up synchronous multi-worker distributed training"
   },
-  "Deterministic data shuffle": {
-    "prefix": "tf-deterministic-seed",
+  "TensorFlow Profiler": {
+    "prefix": "adv_profile",
     "body": [
-      "tf.keras.utils.set_random_seed(${1:42})",
-      "options = tf.data.Options()",
-      "options.deterministic = True",
-      "dataset = ${2:dataset}.with_options(options)",
-      "$0"
-    ],
-    "description": "Seed Keras and request deterministic tf.data ordering; exact reproducibility can still vary by hardware, ops, and software versions"
-  },
-  "Enable TensorFlow NaN and infinity checks": {
-    "prefix": "tf-debug-numerics",
-    "body": [
-      "# Enable before the suspicious model or training step; this adds runtime overhead.",
-      "tf.debugging.enable_check_numerics()",
+      "log_dir = ${1:'logs/profile'}",
+      "tf.profiler.experimental.start(log_dir)",
       "try:",
-      "    ${1:train_step}()",
+      "    model.fit(train_dataset, epochs=${2:1})",
       "finally:",
-      "    # Ensure checking is disabled even when the diagnostic raises on NaN/Inf.",
-      "    tf.debugging.disable_check_numerics()",
-      "$0"
+      "    tf.profiler.experimental.stop()"
     ],
-    "description": "Fail at the TensorFlow operation that first produces NaN or infinity during a diagnostic run"
+    "description": "Profile model training performance"
   },
-  "Profile a short Keras training run": {
-    "prefix": "tf-profile-fit",
+  "Gradient Check": {
+    "prefix": "adv_gradcheck",
     "body": [
-      "from pathlib import Path",
-      "profile_dir = Path(${1:\"logs/profile\"})",
-      "profile_dir.mkdir(parents=True, exist_ok=True)",
-      "# Profile a short, representative run; view traces in TensorBoard's Profile tab.",
-      "with tf.profiler.experimental.Profile(str(profile_dir)):",
-      "    ${2:model}.fit(${3:train_ds}, validation_data=${4:val_ds}, epochs=1, steps_per_epoch=${5:10})",
-      "$0"
+      "with tf.GradientTape() as tape:",
+      "    predictions = model(${1:x}, training=True)",
+      "    loss = loss_fn(${2:y}, predictions)",
+      "gradients = tape.gradient(loss, model.trainable_variables)",
+      "for variable, gradient in zip(model.trainable_variables, gradients):",
+      "    print(variable.name, gradient is not None)"
     ],
-    "description": "Capture TensorFlow CPU/GPU and input-pipeline traces for a bounded Keras training run"
+    "description": "Check whether trainable variables receive gradients"
   },
-  "Measure tf.data input wait time": {
-    "prefix": "tf-data-benchmark",
+  "Custom Metric": {
+    "prefix": "adv_custommetric",
     "body": [
-      "from time import perf_counter",
-      "# Use a dataset with enough batches; this measures iterator wait time, not model throughput.",
-      "for _ in ${1:dataset}.take(${2:2}):  # Warm-up",
-      "    pass",
-      "started = perf_counter()",
-      "batch_count = 0",
-      "for _ in ${1:dataset}.take(${3:50}):",
-      "    batch_count += 1",
-      "elapsed = perf_counter() - started",
-      "print(f\"{batch_count} batches in {elapsed:.2f}s ({elapsed / max(batch_count, 1):.4f}s/batch)\")",
-      "$0"
+      "class ${1:CustomMetric}(keras.metrics.Metric):",
+      "    def __init__(self, name='${2:custom_metric}', **kwargs):",
+      "        super().__init__(name=name, **kwargs)",
+      "        self.total = self.add_weight(name='total', initializer='zeros')",
+      "        self.count = self.add_weight(name='count', initializer='zeros')",
+      "",
+      "    def update_state(self, y_true, y_pred, sample_weight=None):",
+      "        values = ${3:keras.ops.mean(keras.ops.cast(keras.ops.equal(y_true, y_pred), 'float32'))}",
+      "        self.total.assign_add(values)",
+      "        self.count.assign_add(1.0)",
+      "",
+      "    def result(self):",
+      "        return self.total / (self.count + keras.backend.epsilon())",
+      "",
+      "    def reset_state(self):",
+      "        self.total.assign(0.0)",
+      "        self.count.assign(0.0)"
     ],
-    "description": "Roughly measure input iterator wait time after warm-up to help identify a slow tf.data pipeline"
+    "description": "Implement a custom Keras metric"
+  },
+  "Custom Loss": {
+    "prefix": "adv_customloss",
+    "body": [
+      "def ${1:custom_loss}(y_true, y_pred):",
+      "    error = y_true - y_pred",
+      "    return keras.ops.mean(keras.ops.square(error), axis=-1)"
+    ],
+    "description": "Define a custom loss function"
+  },
+  "Custom Callback": {
+    "prefix": "adv_customcallback",
+    "body": [
+      "class ${1:CustomCallback}(keras.callbacks.Callback):",
+      "    def on_epoch_end(self, epoch, logs=None):",
+      "        logs = logs or {}",
+      "        print(f\"Epoch {epoch + 1}: loss={logs.get('loss')}\")"
+    ],
+    "description": "Create a custom Keras callback"
+  },
+  "Gradient Reversal Placeholder": {
+    "prefix": "adv_gradreversal",
+    "body": [
+      "@tf.custom_gradient",
+      "def gradient_reversal(x):",
+      "    def grad(dy):",
+      "        return -${1:1.0} * dy",
+      "    return tf.identity(x), grad"
+    ],
+    "description": "Gradient reversal operator for domain adaptation"
+  },
+  "Model Ensemble Average": {
+    "prefix": "adv_ensembleavg",
+    "body": [
+      "ensemble_inputs = keras.Input(shape=(${1:input_dim},))",
+      "outputs = [model(ensemble_inputs) for model in models]",
+      "ensemble_output = keras.layers.Average()(outputs)",
+      "ensemble_model = keras.Model(ensemble_inputs, ensemble_output, name='ensemble')"
+    ],
+    "description": "Average predictions from multiple compatible models"
+  },
+  "TTA Prediction": {
+    "prefix": "adv_tta",
+    "body": [
+      "predictions = []",
+      "for batch in ${1:augmented_datasets}:",
+      "    predictions.append(model.predict(batch, verbose=0))",
+      "tta_predictions = keras.ops.mean(keras.ops.stack(predictions, axis=0), axis=0)"
+    ],
+    "description": "Average predictions across test-time augmentations"
+  },
+  "Masked Language Model Head": {
+    "prefix": "adv_mlmhead",
+    "body": [
+      "x = keras.layers.Dense(${1:hidden_dim}, activation='gelu')(transformer_output)",
+      "x = keras.layers.LayerNormalization()(x)",
+      "mlm_logits = keras.layers.Dense(${2:vocab_size})(x)",
+      "mlm_model = keras.Model(input_ids, mlm_logits, name='masked_language_model')"
+    ],
+    "description": "Add a masked-language-model prediction head"
+  },
+  "Contrastive Loss": {
+    "prefix": "adv_contrastiveloss",
+    "body": [
+      "def contrastive_loss(y_true, distances, margin=${1:1.0}):",
+      "    y_true = keras.ops.cast(y_true, 'float32')",
+      "    positive = y_true * keras.ops.square(distances)",
+      "    negative = (1.0 - y_true) * keras.ops.square(keras.ops.maximum(margin - distances, 0.0))",
+      "    return keras.ops.mean(positive + negative)"
+    ],
+    "description": "Contrastive loss for pair similarity learning"
+  },
+  "Cosine Similarity Head": {
+    "prefix": "adv_cosinesim",
+    "body": [
+      "normalized_a = keras.ops.normalize(embedding_a, axis=-1)",
+      "normalized_b = keras.ops.normalize(embedding_b, axis=-1)",
+      "similarity = keras.ops.sum(normalized_a * normalized_b, axis=-1)"
+    ],
+    "description": "Compute cosine similarity between embedding vectors"
+  },
+  "Monte Carlo Dropout": {
+    "prefix": "adv_mcdropout",
+    "body": [
+      "mc_predictions = [model(${1:x}, training=True) for _ in range(${2:30})]",
+      "mc_predictions = keras.ops.stack(mc_predictions, axis=0)",
+      "predictive_mean = keras.ops.mean(mc_predictions, axis=0)",
+      "predictive_std = keras.ops.std(mc_predictions, axis=0)"
+    ],
+    "description": "Estimate prediction uncertainty using dropout sampling"
+  },
+  "Save Training Checkpoint": {
+    "prefix": "adv_checkpointmanager",
+    "body": [
+      "checkpoint = tf.train.Checkpoint(model=model, optimizer=optimizer)",
+      "manager = tf.train.CheckpointManager(checkpoint, ${1:'./training_checkpoints'}, max_to_keep=${2:3})",
+      "save_path = manager.save()",
+      "print('Saved checkpoint:', save_path)"
+    ],
+    "description": "Save model and optimizer state with TensorFlow checkpoint manager"
+  },
+  "Restore Training Checkpoint": {
+    "prefix": "adv_restorecheckpoint",
+    "body": [
+      "checkpoint = tf.train.Checkpoint(model=model, optimizer=optimizer)",
+      "latest = tf.train.latest_checkpoint(${1:'./training_checkpoints'})",
+      "if latest:",
+      "    checkpoint.restore(latest).expect_partial()",
+      "    print('Restored:', latest)"
+    ],
+    "description": "Restore model and optimizer state from latest checkpoint"
+  },
+  "Input Pipeline AUTOTUNE": {
+    "prefix": "adv_inputpipeline",
+    "body": [
+      "AUTOTUNE = tf.data.AUTOTUNE",
+      "dataset = dataset.cache()",
+      "dataset = dataset.shuffle(${1:1000})",
+      "dataset = dataset.batch(${2:32})",
+      "dataset = dataset.prefetch(AUTOTUNE)"
+    ],
+    "description": "Build a performant tf.data input pipeline"
+  },
+  "Ragged Tensor": {
+    "prefix": "adv_raggedtensor",
+    "body": [
+      "ragged = tf.ragged.constant(${1:[[1, 2], [3], [4, 5, 6]]})",
+      "print(ragged.shape)",
+      "print(ragged.to_tensor())"
+    ],
+    "description": "Create and inspect a ragged tensor"
+  },
+  "Sparse Tensor": {
+    "prefix": "adv_sparsetensor",
+    "body": [
+      "indices = ${1:[[0, 1], [1, 2]]}",
+      "values = ${2:[3, 4]}",
+      "dense_shape = ${3:[2, 3]}",
+      "sparse_tensor = tf.SparseTensor(indices=indices, values=values, dense_shape=dense_shape)",
+      "dense_tensor = tf.sparse.to_dense(sparse_tensor)"
+    ],
+    "description": "Create a sparse tensor and convert it to dense"
+  },
+  "XLA JIT Compile": {
+    "prefix": "adv_xla",
+    "body": [
+      "@tf.function(jit_compile=True)",
+      "def ${1:compiled_step}(x, y):",
+      "    with tf.GradientTape() as tape:",
+      "        predictions = model(x, training=True)",
+      "        loss = loss_fn(y, predictions)",
+      "    gradients = tape.gradient(loss, model.trainable_variables)",
+      "    optimizer.apply_gradients(zip(gradients, model.trainable_variables))",
+      "    return loss"
+    ],
+    "description": "Compile a custom training step with XLA"
+  },
+  "Quantization Aware Training": {
+    "prefix": "adv_qat",
+    "body": [
+      "# Requires tensorflow-model-optimization",
+      "import tensorflow_model_optimization as tfmot",
+      "quantize_model = tfmot.quantization.keras.quantize_model",
+      "qat_model = quantize_model(${1:model})",
+      "qat_model.compile(optimizer='adam', loss=${2:'sparse_categorical_crossentropy'}, metrics=['accuracy'])"
+    ],
+    "description": "Prepare a model for quantization-aware training (requires tensorflow-model-optimization)"
+  },
+  "Pruning Model": {
+    "prefix": "adv_prunemodel",
+    "body": [
+      "# Requires tensorflow-model-optimization",
+      "import tensorflow_model_optimization as tfmot",
+      "prune_low_magnitude = tfmot.sparsity.keras.prune_low_magnitude",
+      "pruning_params = {'pruning_schedule': tfmot.sparsity.keras.PolynomialDecay(",
+      "    initial_sparsity=${1:0.0}, final_sparsity=${2:0.5}, begin_step=${3:1000}, end_step=${4:5000}",
+      ")} ",
+      "pruned_model = prune_low_magnitude(${5:model}, **pruning_params)",
+      "pruned_model.compile(optimizer='adam', loss=${6:'sparse_categorical_crossentropy'}, metrics=['accuracy'])"
+    ],
+    "description": "Apply magnitude pruning (requires tensorflow-model-optimization)"
+  },
+  "Strip Pruning Wrappers": {
+    "prefix": "adv_strippruning",
+    "body": [
+      "final_model = tfmot.sparsity.keras.strip_pruning(${1:pruned_model})"
+    ],
+    "description": "Remove pruning wrappers before exporting a pruned model"
+  },
+  "adv_attention": {
+    "prefix": "adv_attention",
+    "body": [
+      "attention = keras.layers.Attention()([${1:query}, ${2:value}])"
+    ],
+    "description": "Bahdanau-style additive attention layer"
+  },
+  "adv_dotattention": {
+    "prefix": "adv_dotattention",
+    "body": [
+      "attention = keras.layers.Attention(use_scale=${1:True})([${2:query}, ${3:value}])"
+    ],
+    "description": "Scaled dot-product attention"
+  },
+  "adv_mha": {
+    "prefix": "adv_mha",
+    "body": [
+      "attention = keras.layers.MultiHeadAttention(",
+      "    num_heads=${1:8},",
+      "    key_dim=${2:64},",
+      "    dropout=${3:0.1}",
+      ")(${4:query}, ${5:value}, ${6:value})"
+    ],
+    "description": "Multi-head attention layer"
+  },
+  "adv_transformerblock": {
+    "prefix": "adv_transformerblock",
+    "body": [
+      "class ${1:TransformerBlock}(keras.layers.Layer):",
+      "    def __init__(self, embed_dim, num_heads, ff_dim, dropout=${2:0.1}, **kwargs):",
+      "        super().__init__(**kwargs)",
+      "        self.att = keras.layers.MultiHeadAttention(num_heads=num_heads, key_dim=embed_dim // num_heads)",
+      "        self.ffn = keras.Sequential([keras.layers.Dense(ff_dim, activation='gelu'), keras.layers.Dense(embed_dim)])",
+      "        self.norm1 = keras.layers.LayerNormalization(epsilon=1e-6)",
+      "        self.norm2 = keras.layers.LayerNormalization(epsilon=1e-6)",
+      "        self.drop1 = keras.layers.Dropout(dropout)",
+      "        self.drop2 = keras.layers.Dropout(dropout)",
+      "",
+      "    def call(self, inputs, training=False, mask=None):",
+      "        attn = self.att(inputs, inputs, attention_mask=mask, training=training)",
+      "        x = self.norm1(inputs + self.drop1(attn, training=training))",
+      "        ff = self.ffn(x, training=training)",
+      "        return self.norm2(x + self.drop2(ff, training=training))"
+    ],
+    "description": "Reusable Transformer encoder block with residual connections"
+  },
+  "adv_cnnresnet": {
+    "prefix": "adv_cnnresnet",
+    "body": [
+      "def residual_unit(x, filters, stride=${1:1}):",
+      "    shortcut = x",
+      "    x = keras.layers.Conv2D(filters, 3, strides=stride, padding='same', use_bias=False)(x)",
+      "    x = keras.layers.BatchNormalization()(x)",
+      "    x = keras.layers.Activation('relu')(x)",
+      "    x = keras.layers.Conv2D(filters, 3, padding='same', use_bias=False)(x)",
+      "    x = keras.layers.BatchNormalization()(x)",
+      "    if stride != 1 or shortcut.shape[-1] != filters:",
+      "        shortcut = keras.layers.Conv2D(filters, 1, strides=stride, padding='same', use_bias=False)(shortcut)",
+      "        shortcut = keras.layers.BatchNormalization()(shortcut)",
+      "    return keras.layers.Activation('relu')(x + shortcut)"
+    ],
+    "description": "ResNet-style residual unit for CNNs"
+  },
+  "adv_depthwise": {
+    "prefix": "adv_depthwise",
+    "body": [
+      "x = keras.layers.DepthwiseConv2D(kernel_size=${1:3}, padding='same', use_bias=False)(${2:inputs})",
+      "x = keras.layers.BatchNormalization()(x)",
+      "x = keras.layers.Activation('relu')(x)",
+      "x = keras.layers.Conv2D(${3:64}, kernel_size=1, padding='same', use_bias=False)(x)"
+    ],
+    "description": "Depthwise separable convolution block"
+  },
+  "adv_seblock": {
+    "prefix": "adv_seblock",
+    "body": [
+      "def se_block(x, ratio=${1:16}):",
+      "    channels = x.shape[-1]",
+      "    se = keras.layers.GlobalAveragePooling2D()(x)",
+      "    se = keras.layers.Dense(max(channels // ratio, 1), activation='relu')(se)",
+      "    se = keras.layers.Dense(channels, activation='sigmoid')(se)",
+      "    se = keras.layers.Reshape((1, 1, channels))(se)",
+      "    return keras.layers.Multiply()([x, se])"
+    ],
+    "description": "Squeeze-and-Excitation channel attention block"
+  },
+  "adv_unet": {
+    "prefix": "adv_unet",
+    "body": [
+      "inputs = keras.Input(shape=(${1:256}, ${2:256}, ${3:3}))",
+      "c1 = conv_block(inputs, ${4:64})",
+      "p1 = keras.layers.MaxPooling2D()(c1)",
+      "c2 = conv_block(p1, 128)",
+      "p2 = keras.layers.MaxPooling2D()(c2)",
+      "c3 = conv_block(p2, 256)",
+      "p3 = keras.layers.MaxPooling2D()(c3)",
+      "bridge = conv_block(p3, 512)",
+      "u3 = up_block(bridge, c3, 256)",
+      "u2 = up_block(u3, c2, 128)",
+      "u1 = up_block(u2, c1, 64)",
+      "outputs = keras.layers.Conv2D(${5:1}, 1, activation='sigmoid')(u1)",
+      "unet = keras.Model(inputs, outputs, name='unet')"
+    ],
+    "description": "U-Net segmentation model using conv_block and up_block helpers"
+  },
+  "adv_vae": {
+    "prefix": "adv_vae",
+    "body": [
+      "inputs = keras.Input(shape=(${1:784},))",
+      "x = keras.layers.Dense(${2:256}, activation='relu')(inputs)",
+      "z_mean = keras.layers.Dense(${3:latent_dim})(x)",
+      "z_log_var = keras.layers.Dense(${3:latent_dim})(x)",
+      "z = keras.layers.Lambda(sampling)([z_mean, z_log_var])",
+      "encoder = keras.Model(inputs, [z_mean, z_log_var, z], name='encoder')",
+      "latent_inputs = keras.Input(shape=(${3:latent_dim},))",
+      "x = keras.layers.Dense(256, activation='relu')(latent_inputs)",
+      "outputs = keras.layers.Dense(${1:784}, activation='sigmoid')(x)",
+      "decoder = keras.Model(latent_inputs, outputs, name='decoder')"
+    ],
+    "description": "Variational autoencoder encoder and decoder skeleton; define sampling helper separately"
+  },
+  "adv_gantrainstep": {
+    "prefix": "adv_gantrainstep",
+    "body": [
+      "@tf.function",
+      "def train_gan_step(real_images):",
+      "    batch_size = tf.shape(real_images)[0]",
+      "    noise = tf.random.normal((batch_size, ${1:latent_dim}))",
+      "    with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:",
+      "        fake_images = generator(noise, training=True)",
+      "        real_output = discriminator(real_images, training=True)",
+      "        fake_output = discriminator(fake_images, training=True)",
+      "        gen_loss = ${2:generator_loss_fn}(fake_output)",
+      "        disc_loss = ${3:discriminator_loss_fn}(real_output, fake_output)",
+      "    gen_grads = gen_tape.gradient(gen_loss, generator.trainable_variables)",
+      "    disc_grads = disc_tape.gradient(disc_loss, discriminator.trainable_variables)",
+      "    generator_optimizer.apply_gradients(zip(gen_grads, generator.trainable_variables))",
+      "    discriminator_optimizer.apply_gradients(zip(disc_grads, discriminator.trainable_variables))",
+      "    return gen_loss, disc_loss"
+    ],
+    "description": "Custom GradientTape training step for GAN; provide loss functions and optimizers"
+  },
+  "adv_embedding": {
+    "prefix": "adv_embedding",
+    "body": [
+      "tokens = keras.Input(shape=(${1:sequence_length},), dtype='int32')",
+      "x = keras.layers.Embedding(input_dim=${2:vocab_size}, output_dim=${3:embedding_dim}, mask_zero=True)(tokens)",
+      "embedding_model = keras.Model(tokens, x, name='embedding_model')"
+    ],
+    "description": "Token embedding model with padding mask"
+  },
+  "adv_textclassifier": {
+    "prefix": "adv_textclassifier",
+    "body": [
+      "inputs = keras.Input(shape=(${1:sequence_length},), dtype='int32')",
+      "x = keras.layers.Embedding(${2:vocab_size}, ${3:embedding_dim}, mask_zero=True)(inputs)",
+      "x = keras.layers.Bidirectional(keras.layers.LSTM(${4:64}))(x)",
+      "x = keras.layers.Dropout(${5:0.3})(x)",
+      "outputs = keras.layers.Dense(${6:1}, activation='sigmoid')(x)",
+      "model = keras.Model(inputs, outputs, name='text_classifier')",
+      "model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])"
+    ],
+    "description": "LSTM-based binary text classification model"
+  },
+  "adv_textcnn": {
+    "prefix": "adv_textcnn",
+    "body": [
+      "inputs = keras.Input(shape=(${1:sequence_length},), dtype='int32')",
+      "x = keras.layers.Embedding(${2:vocab_size}, ${3:embedding_dim})(inputs)",
+      "branches = []",
+      "for kernel_size in (${4:3}, 4, 5):",
+      "    branch = keras.layers.Conv1D(${5:128}, kernel_size, activation='relu', padding='valid')(x)",
+      "    branch = keras.layers.GlobalMaxPooling1D()(branch)",
+      "    branches.append(branch)",
+      "x = keras.layers.Concatenate()(branches)",
+      "x = keras.layers.Dropout(${6:0.5})(x)",
+      "outputs = keras.layers.Dense(${7:1}, activation='sigmoid')(x)",
+      "model = keras.Model(inputs, outputs, name='text_cnn')"
+    ],
+    "description": "TextCNN architecture with multiple kernel sizes"
+  },
+  "adv_bilstm": {
+    "prefix": "adv_bilstm",
+    "body": [
+      "inputs = keras.Input(shape=(${1:sequence_length}, ${2:feature_dim}))",
+      "x = keras.layers.Bidirectional(keras.layers.LSTM(${3:64}, return_sequences=True))(inputs)",
+      "x = keras.layers.Bidirectional(keras.layers.LSTM(${4:32}))(x)",
+      "outputs = keras.layers.Dense(${5:num_classes}, activation='softmax')(x)",
+      "model = keras.Model(inputs, outputs, name='bilstm_classifier')"
+    ],
+    "description": "Stacked bidirectional LSTM classifier"
+  },
+  "adv_seq2seq": {
+    "prefix": "adv_seq2seq",
+    "body": [
+      "encoder_inputs = keras.Input(shape=(${1:source_length},), dtype='int32')",
+      "encoder_embedding = keras.layers.Embedding(${2:source_vocab}, ${3:embedding_dim}, mask_zero=True)(encoder_inputs)",
+      "_, state_h, state_c = keras.layers.LSTM(${4:units}, return_state=True)(encoder_embedding)",
+      "decoder_inputs = keras.Input(shape=(${5:target_length},), dtype='int32')",
+      "decoder_embedding = keras.layers.Embedding(${6:target_vocab}, ${3:embedding_dim}, mask_zero=True)(decoder_inputs)",
+      "decoder_outputs = keras.layers.LSTM(${4:units}, return_sequences=True)(decoder_embedding, initial_state=[state_h, state_c])",
+      "outputs = keras.layers.Dense(${6:target_vocab}, activation='softmax')(decoder_outputs)",
+      "model = keras.Model([encoder_inputs, decoder_inputs], outputs, name='seq2seq')"
+    ],
+    "description": "Encoder-decoder LSTM sequence-to-sequence model skeleton"
+  },
+  "adv_maskedloss": {
+    "prefix": "adv_maskedloss",
+    "body": [
+      "def masked_sparse_categorical_loss(y_true, y_pred):",
+      "    y_true = tf.cast(y_true, tf.int32)",
+      "    mask = tf.not_equal(y_true, ${1:0})",
+      "    loss = keras.losses.sparse_categorical_crossentropy(y_true, y_pred)",
+      "    mask = tf.cast(mask, loss.dtype)",
+      "    return tf.reduce_sum(loss * mask) / tf.maximum(tf.reduce_sum(mask), 1.0)"
+    ],
+    "description": "Sparse categorical loss that ignores padding token IDs"
+  },
+  "adv_customtrain": {
+    "prefix": "adv_customtrain",
+    "body": [
+      "@tf.function",
+      "def train_step(x, y):",
+      "    with tf.GradientTape() as tape:",
+      "        y_pred = model(x, training=True)",
+      "        loss = loss_fn(y, y_pred)",
+      "    gradients = tape.gradient(loss, model.trainable_variables)",
+      "    optimizer.apply_gradients(zip(gradients, model.trainable_variables))",
+      "    return loss"
+    ],
+    "description": "Reusable custom TensorFlow training step"
+  },
+  "adv_evalstep": {
+    "prefix": "adv_evalstep",
+    "body": [
+      "@tf.function",
+      "def test_step(x, y):",
+      "    predictions = model(x, training=False)",
+      "    loss = loss_fn(y, predictions)",
+      "    return loss, predictions"
+    ],
+    "description": "Compiled evaluation step for a custom training loop"
+  },
+  "adv_gradientnorm": {
+    "prefix": "adv_gradientnorm",
+    "body": [
+      "with tf.GradientTape() as tape:",
+      "    predictions = model(${1:x}, training=True)",
+      "    loss = loss_fn(${2:y}, predictions)",
+      "gradients = tape.gradient(loss, model.trainable_variables)",
+      "global_norm = tf.linalg.global_norm([g for g in gradients if g is not None])",
+      "print('Gradient global norm:', global_norm)"
+    ],
+    "description": "Inspect global gradient norm during training"
+  },
+  "adv_clipbyglobalnorm": {
+    "prefix": "adv_clipbyglobalnorm",
+    "body": [
+      "gradients = tape.gradient(loss, model.trainable_variables)",
+      "gradients, global_norm = tf.clip_by_global_norm(gradients, ${1:1.0})",
+      "optimizer.apply_gradients(zip(gradients, model.trainable_variables))"
+    ],
+    "description": "Clip gradients by global norm in a custom training loop"
+  },
+  "adv_freezecompile": {
+    "prefix": "adv_freezecompile",
+    "body": [
+      "base_model.trainable = False",
+      "inputs = keras.Input(shape=(${1:224}, ${2:224}, ${3:3}))",
+      "x = base_model(inputs, training=False)",
+      "x = keras.layers.GlobalAveragePooling2D()(x)",
+      "outputs = keras.layers.Dense(${4:num_classes}, activation='softmax')(x)",
+      "model = keras.Model(inputs, outputs)",
+      "model.compile(optimizer=keras.optimizers.Adam(${5:1e-3}), loss='sparse_categorical_crossentropy', metrics=['accuracy'])"
+    ],
+    "description": "Build and compile a frozen pretrained backbone classifier"
+  },
+  "adv_finetune": {
+    "prefix": "adv_finetune",
+    "body": [
+      "base_model.trainable = True",
+      "for layer in base_model.layers[:-${1:20}]:",
+      "    layer.trainable = False",
+      "model.compile(",
+      "    optimizer=keras.optimizers.Adam(learning_rate=${2:1e-5}),",
+      "    loss=${3:'sparse_categorical_crossentropy'},",
+      "    metrics=['accuracy']",
+      ")"
+    ],
+    "description": "Fine-tune the top layers of a pretrained backbone; recompile after changing trainable flags"
+  },
+  "adv_mixedprecision": {
+    "prefix": "adv_mixedprecision",
+    "body": [
+      "keras.mixed_precision.set_global_policy(${1:'mixed_float16'})",
+      "print('Compute dtype:', keras.mixed_precision.global_policy().compute_dtype)",
+      "print('Variable dtype:', keras.mixed_precision.global_policy().variable_dtype)"
+    ],
+    "description": "Enable mixed precision; choose policy supported by the target hardware"
+  },
+  "adv_xlaenable": {
+    "prefix": "adv_xlaenable",
+    "body": [
+      "model.compile(",
+      "    optimizer=${1:'adam'},",
+      "    loss=${2:'sparse_categorical_crossentropy'},",
+      "    metrics=['accuracy'],",
+      "    jit_compile=True",
+      ")"
+    ],
+    "description": "Enable XLA compilation through model.compile"
+  },
+  "adv_tfrecordread": {
+    "prefix": "adv_tfrecordread",
+    "body": [
+      "feature_description = {",
+      "    '${1:feature}': tf.io.FixedLenFeature([], tf.float32),",
+      "    '${2:label}': tf.io.FixedLenFeature([], tf.int64)",
+      "}",
+      "def parse_example(serialized):",
+      "    example = tf.io.parse_single_example(serialized, feature_description)",
+      "    features = {key: value for key, value in example.items() if key != '${2:label}'}",
+      "    return features, example['${2:label}']",
+      "dataset = tf.data.TFRecordDataset(${3:filenames})",
+      "dataset = dataset.map(parse_example, num_parallel_calls=tf.data.AUTOTUNE)"
+    ],
+    "description": "Read and parse TFRecord examples with tf.data"
+  },
+  "adv_tfrecordwrite": {
+    "prefix": "adv_tfrecordwrite",
+    "body": [
+      "def serialize_example(feature, label):",
+      "    feature_value = tf.train.Feature(float_list=tf.train.FloatList(value=[float(feature)]))",
+      "    label_value = tf.train.Feature(int64_list=tf.train.Int64List(value=[int(label)]))",
+      "    example = tf.train.Example(features=tf.train.Features(feature={",
+      "        '${1:feature}': feature_value, '${2:label}': label_value",
+      "    }))",
+      "    return example.SerializeToString()",
+      "with tf.io.TFRecordWriter(${3:'data.tfrecord'}) as writer:",
+      "    for feature, label in zip(${4:features}, ${5:labels}):",
+      "        writer.write(serialize_example(feature, label))"
+    ],
+    "description": "Serialize simple feature-label pairs into a TFRecord file"
+  },
+  "adv_tensorboardimages": {
+    "prefix": "adv_tensorboardimages",
+    "body": [
+      "file_writer = tf.summary.create_file_writer(${1:'logs/images'})",
+      "with file_writer.as_default():",
+      "    tf.summary.image('${2:sample_images}', ${3:images}, step=${4:0}, max_outputs=${5:4})"
+    ],
+    "description": "Write image batches to TensorBoard summaries"
+  },
+  "adv_tensorboardhist": {
+    "prefix": "adv_tensorboardhist",
+    "body": [
+      "file_writer = tf.summary.create_file_writer(${1:'logs/histograms'})",
+      "with file_writer.as_default():",
+      "    for name, value in ${2:model}.trainable_variables:",
+      "        tf.summary.histogram(name, value, step=${3:step})"
+    ],
+    "description": "Log tensor histograms to TensorBoard"
+  },
+  "adv_export": {
+    "prefix": "adv_export",
+    "body": [
+      "${1:model}.export(${2:'saved_model_dir'})"
+    ],
+    "description": "Export a Keras model as a TensorFlow SavedModel artifact (Keras 3)"
+  },
+  "adv_tfliteopt": {
+    "prefix": "adv_tfliteopt",
+    "body": [
+      "converter = tf.lite.TFLiteConverter.from_keras_model(${1:model})",
+      "converter.optimizations = [tf.lite.Optimize.DEFAULT]",
+      "tflite_model = converter.convert()",
+      "with open(${2:'model_optimized.tflite'}, 'wb') as f:",
+      "    f.write(tflite_model)"
+    ],
+    "description": "Convert a Keras model to optimized TensorFlow Lite"
+  },
+  "adv_tflitequant": {
+    "prefix": "adv_tflitequant",
+    "body": [
+      "converter = tf.lite.TFLiteConverter.from_keras_model(${1:model})",
+      "converter.optimizations = [tf.lite.Optimize.DEFAULT]",
+      "converter.representative_dataset = ${2:representative_dataset}",
+      "converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]",
+      "converter.inference_input_type = tf.int8",
+      "converter.inference_output_type = tf.int8",
+      "tflite_model = converter.convert()"
+    ],
+    "description": "Full integer post-training quantization; provide representative_dataset generator"
+  },
+  "adv_customlayerbuild": {
+    "prefix": "adv_customlayerbuild",
+    "body": [
+      "class ${1:MyLayer}(keras.layers.Layer):",
+      "    def __init__(self, units, **kwargs):",
+      "        super().__init__(**kwargs)",
+      "        self.units = units",
+      "",
+      "    def build(self, input_shape):",
+      "        self.kernel = self.add_weight(",
+      "            name='kernel', shape=(input_shape[-1], self.units), initializer='glorot_uniform', trainable=True",
+      "        )",
+      "        self.bias = self.add_weight(name='bias', shape=(self.units,), initializer='zeros', trainable=True)",
+      "",
+      "    def call(self, inputs):",
+      "        return keras.ops.matmul(inputs, self.kernel) + self.bias",
+      "",
+      "    def get_config(self):",
+      "        config = super().get_config()",
+      "        config.update({'units': self.units})",
+      "        return config"
+    ],
+    "description": "Serializable custom Keras layer with trainable weights"
+  },
+  "adv_customactivation": {
+    "prefix": "adv_customactivation",
+    "body": [
+      "@keras.saving.register_keras_serializable(package='Custom')",
+      "def ${1:custom_activation}(x):",
+      "    return keras.ops.tanh(x) * ${2:1.0}"
+    ],
+    "description": "Register a custom serializable Keras activation"
+  },
+  "adv_registerloss": {
+    "prefix": "adv_registerloss",
+    "body": [
+      "@keras.saving.register_keras_serializable(package='Custom')",
+      "def ${1:custom_loss}(y_true, y_pred):",
+      "    return keras.ops.mean(keras.ops.square(y_true - y_pred), axis=-1)"
+    ],
+    "description": "Register a custom serializable Keras loss function"
+  },
+  "adv_registerlayer": {
+    "prefix": "adv_registerlayer",
+    "body": [
+      "@keras.saving.register_keras_serializable(package='Custom')",
+      "class ${1:CustomLayer}(keras.layers.Layer):",
+      "    def call(self, inputs):",
+      "        return ${2:inputs}"
+    ],
+    "description": "Register a custom Keras layer for model serialization"
+  },
+  "adv_siamesecompare": {
+    "prefix": "adv_siamesecompare",
+    "body": [
+      "input_a = keras.Input(shape=(${1:embedding_dim},))",
+      "input_b = keras.Input(shape=(${1:embedding_dim},))",
+      "distance = keras.layers.Lambda(",
+      "    lambda tensors: keras.ops.sqrt(keras.ops.sum(keras.ops.square(tensors[0] - tensors[1]), axis=-1, keepdims=True))",
+      ")([input_a, input_b])",
+      "siamese_model = keras.Model([input_a, input_b], distance, name='siamese_distance')"
+    ],
+    "description": "Build a Siamese distance head from two embedding vectors"
+  },
+  "adv_tripletloss": {
+    "prefix": "adv_tripletloss",
+    "body": [
+      "def triplet_loss(anchor, positive, negative, margin=${1:0.2}):",
+      "    pos_dist = keras.ops.sum(keras.ops.square(anchor - positive), axis=-1)",
+      "    neg_dist = keras.ops.sum(keras.ops.square(anchor - negative), axis=-1)",
+      "    return keras.ops.mean(keras.ops.maximum(pos_dist - neg_dist + margin, 0.0))"
+    ],
+    "description": "Triplet loss for metric learning embeddings"
+  },
+  "adv_gradcam": {
+    "prefix": "adv_gradcam",
+    "body": [
+      "grad_model = keras.Model(",
+      "    inputs=${1:model}.inputs,",
+      "    outputs=[${1:model}.get_layer(${2:'last_conv_layer'}).output, ${1:model}.output]",
+      ")",
+      "with tf.GradientTape() as tape:",
+      "    conv_outputs, predictions = grad_model(${3:image_batch})",
+      "    class_score = predictions[:, ${4:class_index}]",
+      "grads = tape.gradient(class_score, conv_outputs)",
+      "weights = tf.reduce_mean(grads, axis=(1, 2), keepdims=True)",
+      "heatmap = tf.reduce_sum(weights * conv_outputs, axis=-1)",
+      "heatmap = tf.nn.relu(heatmap)",
+      "heatmap = heatmap / (tf.reduce_max(heatmap, axis=(1, 2), keepdims=True) + keras.backend.epsilon())"
+    ],
+    "description": "Grad-CAM heatmap computation for CNN explainability"
+  },
+  "adv_saliency": {
+    "prefix": "adv_saliency",
+    "body": [
+      "image = tf.convert_to_tensor(${1:image_batch})",
+      "with tf.GradientTape() as tape:",
+      "    tape.watch(image)",
+      "    predictions = ${2:model}(image, training=False)",
+      "    score = predictions[:, ${3:class_index}]",
+      "saliency = tape.gradient(score, image)",
+      "saliency = tf.reduce_max(tf.abs(saliency), axis=-1)"
+    ],
+    "description": "Input-gradient saliency map for model interpretability"
+  },
+  "adv_customtrainmodel": {
+    "prefix": "adv_customtrainmodel",
+    "body": [
+      "class ${1:CustomTrainingModel}(keras.Model):",
+      "    def train_step(self, data):",
+      "        x, y = data",
+      "        with tf.GradientTape() as tape:",
+      "            y_pred = self(x, training=True)",
+      "            loss = self.compute_loss(y=y, y_pred=y_pred)",
+      "        gradients = tape.gradient(loss, self.trainable_variables)",
+      "        self.optimizer.apply_gradients(zip(gradients, self.trainable_variables))",
+      "        return self.compute_metrics(x, y, y_pred, sample_weight=None)"
+    ],
+    "description": "Override train_step for a custom Keras training loop"
+  },
+  "adv_freeze_bn": {
+    "prefix": "adv_freeze_bn",
+    "body": [
+      "for layer in ${1:base_model}.layers:",
+      "    if isinstance(layer, keras.layers.BatchNormalization):",
+      "        layer.trainable = False"
+    ],
+    "description": "Keep BatchNormalization layers frozen during fine-tuning"
+  },
+  "adv_diststrategy": {
+    "prefix": "adv_diststrategy",
+    "body": [
+      "strategy = tf.distribute.get_strategy()",
+      "with strategy.scope():",
+      "    model = ${1:build_model}()",
+      "    model.compile(optimizer=${2:'adam'}, loss=${3:'sparse_categorical_crossentropy'}, metrics=['accuracy'])"
+    ],
+    "description": "Create and compile a model inside the active distribution strategy scope"
+  },
+  "adv_datasetservice": {
+    "prefix": "adv_datasetservice",
+    "body": [
+      "dataset = dataset.apply(",
+      "    tf.data.experimental.service.distribute(",
+      "        processing_mode=${1:'parallel_epochs'},",
+      "        service=${2:'grpc://localhost:5000'}",
+      "    )",
+      ")"
+    ],
+    "description": "Distribute tf.data input processing through tf.data service"
+  },
+  "adv_tensorarray": {
+    "prefix": "adv_tensorarray",
+    "body": [
+      "values = tf.TensorArray(dtype=tf.float32, size=${1:0}, dynamic_size=True)",
+      "for i in tf.range(${2:num_steps}):",
+      "    values = values.write(i, ${3:step_value})",
+      "result = values.stack()"
+    ],
+    "description": "Accumulate loop outputs with TensorArray"
+  },
+  "adv_whileloop": {
+    "prefix": "adv_whileloop",
+    "body": [
+      "def cond(i, state):",
+      "    return i < ${1:num_steps}",
+      "",
+      "def body(i, state):",
+      "    state = ${2:step_fn}(state)",
+      "    return i + 1, state",
+      "",
+      "_, final_state = tf.while_loop(cond, body, loop_vars=(0, ${3:initial_state}))"
+    ],
+    "description": "Graph-compatible TensorFlow while loop"
+  },
+  "adv_function": {
+    "prefix": "adv_function",
+    "body": [
+      "@tf.function(reduce_retracing=True)",
+      "def ${1:train_function}(x, y):",
+      "    return ${2:model}(x, training=True)"
+    ],
+    "description": "Trace a Python function into a TensorFlow graph"
+  },
+  "adv_customgradient": {
+    "prefix": "adv_customgradient",
+    "body": [
+      "@tf.custom_gradient",
+      "def ${1:custom_op}(x):",
+      "    y = ${2:tf.identity(x)}",
+      "    def grad(dy):",
+      "        return ${3:dy}",
+      "    return y, grad"
+    ],
+    "description": "Define a TensorFlow operation with a custom gradient"
+  },
+  "adv_inputsignature": {
+    "prefix": "adv_inputsignature",
+    "body": [
+      "@tf.function(input_signature=[tf.TensorSpec(shape=[None, ${1:feature_dim}], dtype=tf.float32)])",
+      "def ${2:serve}(inputs):",
+      "    return {'outputs': ${3:model}(inputs, training=False)}"
+    ],
+    "description": "Define a traced TensorFlow function with an explicit input signature"
+  },
+  "adv_serving": {
+    "prefix": "adv_serving",
+    "body": [
+      "@tf.function(input_signature=[tf.TensorSpec([None, ${1:feature_dim}], tf.float32)])",
+      "def serving_fn(inputs):",
+      "    return {'predictions': ${2:model}(inputs, training=False)}",
+      "",
+      "tf.saved_model.save(${2:model}, ${3:'saved_model'}, signatures={'serving_default': serving_fn})"
+    ],
+    "description": "Export a TensorFlow SavedModel with an explicit serving signature"
   }
 }

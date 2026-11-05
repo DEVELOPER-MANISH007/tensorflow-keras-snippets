@@ -1,0 +1,270 @@
+{
+    "Compile Model": {
+        "prefix": "tfcompile",
+        "body": [
+            "model.compile(",
+            "    optimizer=\"$1\",",
+            "    loss=\"$2\",",
+            "    metrics=[$3]",
+            ")"
+        ],
+        "description": "Compile a Keras model with configurable optimizer, loss and metrics"
+    },
+    "Compile Binary Classifier": {
+        "prefix": "tfcompilebinary",
+        "body": [
+            "model.compile(",
+            "    optimizer=keras.optimizers.Adam(learning_rate=$1),",
+            "    loss=\"binary_crossentropy\",",
+            "    metrics=[\"accuracy\", keras.metrics.Precision(), keras.metrics.Recall()]",
+            ")"
+        ],
+        "description": "Compile a binary classification model"
+    },
+    "Compile Multiclass Classifier": {
+        "prefix": "tfcompilemulti",
+        "body": [
+            "model.compile(",
+            "    optimizer=keras.optimizers.Adam(learning_rate=$1),",
+            "    loss=\"categorical_crossentropy\",",
+            "    metrics=[\"accuracy\"]",
+            ")"
+        ],
+        "description": "Compile a one-hot multiclass classification model"
+    },
+    "Compile Sparse Multiclass Classifier": {
+        "prefix": "tfcompilesparse",
+        "body": [
+            "model.compile(",
+            "    optimizer=keras.optimizers.Adam(learning_rate=$1),",
+            "    loss=\"sparse_categorical_crossentropy\",",
+            "    metrics=[\"accuracy\"]",
+            ")"
+        ],
+        "description": "Compile a multiclass model with integer class labels"
+    },
+    "Compile Regression Model": {
+        "prefix": "tfcompileregression",
+        "body": [
+            "model.compile(",
+            "    optimizer=keras.optimizers.Adam(learning_rate=$1),",
+            "    loss=\"mean_squared_error\",",
+            "    metrics=[\"mean_absolute_error\"]",
+            ")"
+        ],
+        "description": "Compile a regression model"
+    },
+    "Compile with Adam": {
+        "prefix": "tfcompileadam",
+        "body": [
+            "model.compile(",
+            "    optimizer=keras.optimizers.Adam(learning_rate=$1),",
+            "    loss=\"$2\",",
+            "    metrics=[$3]",
+            ")"
+        ],
+        "description": "Compile a model using Adam optimizer"
+    },
+    "Compile with SGD": {
+        "prefix": "tfcompilesgd",
+        "body": [
+            "model.compile(",
+            "    optimizer=keras.optimizers.SGD(learning_rate=$1, momentum=$2),",
+            "    loss=\"$3\",",
+            "    metrics=[$4]",
+            ")"
+        ],
+        "description": "Compile a model using SGD optimizer"
+    },
+    "Compile with Multiple Metrics": {
+        "prefix": "tfcompilemetrics",
+        "body": [
+            "model.compile(",
+            "    optimizer=\"$1\",",
+            "    loss=\"$2\",",
+            "    metrics=[\"accuracy\", keras.metrics.Precision(), keras.metrics.Recall()]",
+            ")"
+        ],
+        "description": "Compile a model with multiple metrics"
+    },
+    "Fit Model": {
+        "prefix": "tffit",
+        "body": [
+            "history = model.fit(",
+            "    $1,",
+            "    $2,",
+            "    epochs=$3",
+            ")"
+        ],
+        "description": "Train a model using model.fit"
+    },
+    "Fit with Custom Epochs": {
+        "prefix": "tffitepoch",
+        "body": [
+            "history = model.fit(",
+            "    $1,",
+            "    $2,",
+            "    epochs=$3,",
+            "    verbose=1",
+            ")"
+        ],
+        "description": "Train a model for a configurable number of epochs"
+    },
+    "Fit with Batch Size": {
+        "prefix": "tffitbatch",
+        "body": [
+            "history = model.fit(",
+            "    $1,",
+            "    $2,",
+            "    epochs=$3,",
+            "    batch_size=$4",
+            ")"
+        ],
+        "description": "Train a model with a configurable batch size"
+    },
+    "Fit with Validation Data": {
+        "prefix": "tffitval",
+        "body": [
+            "history = model.fit(",
+            "    $1,",
+            "    $2,",
+            "    validation_data=($3, $4),",
+            "    epochs=$5,",
+            "    batch_size=$6",
+            ")"
+        ],
+        "description": "Train a model with separate validation data"
+    },
+    "Fit with Validation Split": {
+        "prefix": "tffitvalidation",
+        "body": [
+            "history = model.fit(",
+            "    $1,",
+            "    $2,",
+            "    validation_split=$3,",
+            "    epochs=$4,",
+            "    batch_size=$5",
+            ")"
+        ],
+        "description": "Train a model using a validation split"
+    },
+    "Fit with Shuffle": {
+        "prefix": "tffitshuffle",
+        "body": [
+            "history = model.fit(",
+            "    $1,",
+            "    $2,",
+            "    epochs=$3,",
+            "    batch_size=$4,",
+            "    shuffle=$5",
+            ")"
+        ],
+        "description": "Train a model with configurable shuffling"
+    },
+    "Fit with Callbacks": {
+        "prefix": "tffitcallback",
+        "body": [
+            "history = model.fit(",
+            "    $1,",
+            "    $2,",
+            "    validation_data=($3, $4),",
+            "    epochs=$5,",
+            "    callbacks=$6",
+            ")"
+        ],
+        "description": "Train a model with validation data and callbacks"
+    },
+    "Fit with Steps per Epoch": {
+        "prefix": "tffitsteps",
+        "body": [
+            "history = model.fit(",
+            "    $1,",
+            "    epochs=$2,",
+            "    steps_per_epoch=$3",
+            ")"
+        ],
+        "description": "Train a dataset-based model with steps per epoch"
+    },
+    "Evaluate Model": {
+        "prefix": "tfevaluate",
+        "body": [
+            "results = model.evaluate(",
+            "    $1,",
+            "    $2,",
+            "    batch_size=$3,",
+            "    verbose=1",
+            ")"
+        ],
+        "description": "Evaluate a trained model"
+    },
+    "Predict with Model": {
+        "prefix": "tfpredict",
+        "body": [
+            "predictions = model.predict(",
+            "    $1,",
+            "    batch_size=$2,",
+            "    verbose=1",
+            ")"
+        ],
+        "description": "Generate predictions using a trained model"
+    },
+    "Store Training History": {
+        "prefix": "tfhistory",
+        "body": [
+            "history = model.fit(",
+            "    $1,",
+            "    $2,",
+            "    validation_split=$3,",
+            "    epochs=$4",
+            ")",
+            "",
+            "history.history"
+        ],
+        "description": "Train a model and access its history dictionary"
+    },
+    "Plot Training and Validation Loss": {
+        "prefix": "tfplotloss",
+        "body": [
+            "plt.plot(history.history[\"loss\"], label=\"Training Loss\")",
+            "plt.plot(history.history[\"val_loss\"], label=\"Validation Loss\")",
+            "plt.xlabel(\"Epoch\")",
+            "plt.ylabel(\"Loss\")",
+            "plt.legend()",
+            "plt.show()"
+        ],
+        "description": "Plot training and validation loss from a Keras History object"
+    },
+    "Plot Training and Validation Accuracy": {
+        "prefix": "tfplotaccuracy",
+        "body": [
+            "plt.plot(history.history[\"accuracy\"], label=\"Training Accuracy\")",
+            "plt.plot(history.history[\"val_accuracy\"], label=\"Validation Accuracy\")",
+            "plt.xlabel(\"Epoch\")",
+            "plt.ylabel(\"Accuracy\")",
+            "plt.legend()",
+            "plt.show()"
+        ],
+        "description": "Plot training and validation accuracy from a Keras History object"
+    },
+    "Save Model Weights": {
+        "prefix": "tfsaveweights",
+        "body": [
+            "model.save_weights(\"$1.weights.h5\")"
+        ],
+        "description": "Save Keras model weights"
+    },
+    "Load Model Weights": {
+        "prefix": "tfloadweights",
+        "body": [
+            "model.load_weights(\"$1.weights.h5\")"
+        ],
+        "description": "Load Keras model weights"
+    },
+    "Print Model Summary": {
+        "prefix": "tfmodelsummary",
+        "body": [
+            "model.summary()"
+        ],
+        "description": "Display the Keras model architecture summary"
+    }
+}

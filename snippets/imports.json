@@ -1,0 +1,1017 @@
+{
+    "Import TensorFlow": {
+        "prefix": "tf",
+        "body": [
+            "import tensorflow as tf"
+        ],
+        "description": "Import TensorFlow as tf"
+    },
+    "Import Keras": {
+        "prefix": "keras",
+        "body": [
+            "from tensorflow import keras"
+        ],
+        "description": "Import the Keras API"
+    },
+    "Import Keras layers module": {
+        "prefix": "tflayers",
+        "body": [
+            "from tensorflow.keras import layers"
+        ],
+        "description": "Import the Keras layers module"
+    },
+    "Import Keras models module": {
+        "prefix": "tfmodels",
+        "body": [
+            "from tensorflow.keras import models"
+        ],
+        "description": "Import the Keras models module"
+    },
+    "Import Keras backend": {
+        "prefix": "tfbackend",
+        "body": [
+            "from tensorflow.keras import backend as K"
+        ],
+        "description": "Import the Keras backend"
+    },
+    "Import Keras utilities": {
+        "prefix": "tfutils",
+        "body": [
+            "from tensorflow.keras import utils"
+        ],
+        "description": "Import Keras utilities"
+    },
+    "Import Keras ops": {
+        "prefix": "tfops",
+        "body": [
+            "from tensorflow.keras import ops"
+        ],
+        "description": "Import Keras operations"
+    },
+    "Import TensorFlow Dataset": {
+        "prefix": "tfdata",
+        "body": [
+            "from tensorflow.data import Dataset"
+        ],
+        "description": "Import the tf.data Dataset class"
+    },
+    "Import TensorFlow random seed utility": {
+        "prefix": "tfrandom",
+        "body": [
+            "from tensorflow.random import set_seed"
+        ],
+        "description": "Import TensorFlow random seed utility"
+    },
+    "Import physical device listing": {
+        "prefix": "tfconfig",
+        "body": [
+            "from tensorflow.config import list_physical_devices"
+        ],
+        "description": "Import TensorFlow physical device listing utility"
+    },
+    "Import Dense": {
+        "prefix": "tfdense",
+        "body": [
+            "from tensorflow.keras.layers import Dense"
+        ],
+        "description": "Dense Keras layer"
+    },
+    "Import Input": {
+        "prefix": "tfinput",
+        "body": [
+            "from tensorflow.keras.layers import Input"
+        ],
+        "description": "Input Keras layer"
+    },
+    "Import Flatten": {
+        "prefix": "tfflatten",
+        "body": [
+            "from tensorflow.keras.layers import Flatten"
+        ],
+        "description": "Flatten Keras layer"
+    },
+    "Import Dropout": {
+        "prefix": "tfdropout",
+        "body": [
+            "from tensorflow.keras.layers import Dropout"
+        ],
+        "description": "Dropout Keras layer"
+    },
+    "Import Reshape": {
+        "prefix": "tfreshape",
+        "body": [
+            "from tensorflow.keras.layers import Reshape"
+        ],
+        "description": "Reshape Keras layer"
+    },
+    "Import Embedding": {
+        "prefix": "tfembed",
+        "body": [
+            "from tensorflow.keras.layers import Embedding"
+        ],
+        "description": "Embedding Keras layer"
+    },
+    "Import BatchNormalization": {
+        "prefix": "tfbn",
+        "body": [
+            "from tensorflow.keras.layers import BatchNormalization"
+        ],
+        "description": "BatchNormalization Keras layer"
+    },
+    "Import Activation": {
+        "prefix": "tfactivation",
+        "body": [
+            "from tensorflow.keras.layers import Activation"
+        ],
+        "description": "Activation Keras layer"
+    },
+    "Import Lambda": {
+        "prefix": "tflambda",
+        "body": [
+            "from tensorflow.keras.layers import Lambda"
+        ],
+        "description": "Lambda Keras layer"
+    },
+    "Import Permute": {
+        "prefix": "tfpermute",
+        "body": [
+            "from tensorflow.keras.layers import Permute"
+        ],
+        "description": "Permute Keras layer"
+    },
+    "Import RepeatVector": {
+        "prefix": "tfrepeat",
+        "body": [
+            "from tensorflow.keras.layers import RepeatVector"
+        ],
+        "description": "RepeatVector Keras layer"
+    },
+    "Import Masking": {
+        "prefix": "tfmasking",
+        "body": [
+            "from tensorflow.keras.layers import Masking"
+        ],
+        "description": "Masking Keras layer"
+    },
+    "Import Concatenate": {
+        "prefix": "tfconcat",
+        "body": [
+            "from tensorflow.keras.layers import Concatenate"
+        ],
+        "description": "Concatenate Keras layer"
+    },
+    "Import Add": {
+        "prefix": "tfadd",
+        "body": [
+            "from tensorflow.keras.layers import Add"
+        ],
+        "description": "Add Keras layer"
+    },
+    "Import Multiply": {
+        "prefix": "tfmultiply",
+        "body": [
+            "from tensorflow.keras.layers import Multiply"
+        ],
+        "description": "Multiply Keras layer"
+    },
+    "Import Dot": {
+        "prefix": "tfdot",
+        "body": [
+            "from tensorflow.keras.layers import Dot"
+        ],
+        "description": "Dot Keras layer"
+    },
+    "Import Conv1D": {
+        "prefix": "tfconv1d",
+        "body": [
+            "from tensorflow.keras.layers import Conv1D"
+        ],
+        "description": "Import the Conv1D layer"
+    },
+    "Import Conv2D": {
+        "prefix": "tfconv2d",
+        "body": [
+            "from tensorflow.keras.layers import Conv2D"
+        ],
+        "description": "Import the Conv2D layer"
+    },
+    "Import Conv3D": {
+        "prefix": "tfconv3d",
+        "body": [
+            "from tensorflow.keras.layers import Conv3D"
+        ],
+        "description": "Import the Conv3D layer"
+    },
+    "Import DepthwiseConv2D": {
+        "prefix": "tfdepthconv",
+        "body": [
+            "from tensorflow.keras.layers import DepthwiseConv2D"
+        ],
+        "description": "Import the DepthwiseConv2D layer"
+    },
+    "Import SeparableConv2D": {
+        "prefix": "tfsepconv",
+        "body": [
+            "from tensorflow.keras.layers import SeparableConv2D"
+        ],
+        "description": "Import the SeparableConv2D layer"
+    },
+    "Import MaxPooling1D": {
+        "prefix": "tfmaxpool1d",
+        "body": [
+            "from tensorflow.keras.layers import MaxPooling1D"
+        ],
+        "description": "Import the MaxPooling1D layer"
+    },
+    "Import MaxPooling2D": {
+        "prefix": "tfmaxpool2d",
+        "body": [
+            "from tensorflow.keras.layers import MaxPooling2D"
+        ],
+        "description": "Import the MaxPooling2D layer"
+    },
+    "Import MaxPooling3D": {
+        "prefix": "tfmaxpool3d",
+        "body": [
+            "from tensorflow.keras.layers import MaxPooling3D"
+        ],
+        "description": "Import the MaxPooling3D layer"
+    },
+    "Import AveragePooling1D": {
+        "prefix": "tfavgpool1d",
+        "body": [
+            "from tensorflow.keras.layers import AveragePooling1D"
+        ],
+        "description": "Import the AveragePooling1D layer"
+    },
+    "Import AveragePooling2D": {
+        "prefix": "tfavgpool2d",
+        "body": [
+            "from tensorflow.keras.layers import AveragePooling2D"
+        ],
+        "description": "Import the AveragePooling2D layer"
+    },
+    "Import GlobalAveragePooling1D": {
+        "prefix": "tfgap1d",
+        "body": [
+            "from tensorflow.keras.layers import GlobalAveragePooling1D"
+        ],
+        "description": "Import the GlobalAveragePooling1D layer"
+    },
+    "Import GlobalAveragePooling2D": {
+        "prefix": "tfgap2d",
+        "body": [
+            "from tensorflow.keras.layers import GlobalAveragePooling2D"
+        ],
+        "description": "Import the GlobalAveragePooling2D layer"
+    },
+    "Import GlobalMaxPooling1D": {
+        "prefix": "tfgmp1d",
+        "body": [
+            "from tensorflow.keras.layers import GlobalMaxPooling1D"
+        ],
+        "description": "Import the GlobalMaxPooling1D layer"
+    },
+    "Import GlobalMaxPooling2D": {
+        "prefix": "tfgmp2d",
+        "body": [
+            "from tensorflow.keras.layers import GlobalMaxPooling2D"
+        ],
+        "description": "Import the GlobalMaxPooling2D layer"
+    },
+    "Import UpSampling2D": {
+        "prefix": "tfupsample",
+        "body": [
+            "from tensorflow.keras.layers import UpSampling2D"
+        ],
+        "description": "Import the UpSampling2D layer"
+    },
+    "Import ZeroPadding2D": {
+        "prefix": "tfzeropad",
+        "body": [
+            "from tensorflow.keras.layers import ZeroPadding2D"
+        ],
+        "description": "Import the ZeroPadding2D layer"
+    },
+    "Import SimpleRNN": {
+        "prefix": "tfrnn",
+        "body": [
+            "from tensorflow.keras.layers import SimpleRNN"
+        ],
+        "description": "Import the SimpleRNN layer"
+    },
+    "Import LSTM": {
+        "prefix": "tflstm",
+        "body": [
+            "from tensorflow.keras.layers import LSTM"
+        ],
+        "description": "Import the LSTM layer"
+    },
+    "Import GRU": {
+        "prefix": "tfgru",
+        "body": [
+            "from tensorflow.keras.layers import GRU"
+        ],
+        "description": "Import the GRU layer"
+    },
+    "Import Bidirectional": {
+        "prefix": "tfbidir",
+        "body": [
+            "from tensorflow.keras.layers import Bidirectional"
+        ],
+        "description": "Import the Bidirectional layer"
+    },
+    "Import ConvLSTM2D": {
+        "prefix": "tfconvlstm",
+        "body": [
+            "from tensorflow.keras.layers import ConvLSTM2D"
+        ],
+        "description": "Import the ConvLSTM2D layer"
+    },
+    "Import TextVectorization": {
+        "prefix": "tftextvector",
+        "body": [
+            "from tensorflow.keras.layers import TextVectorization"
+        ],
+        "description": "Import the TextVectorization layer"
+    },
+    "Import Attention": {
+        "prefix": "tfattention",
+        "body": [
+            "from tensorflow.keras.layers import Attention"
+        ],
+        "description": "Import the Attention layer"
+    },
+    "Import MultiHeadAttention": {
+        "prefix": "tfmha",
+        "body": [
+            "from tensorflow.keras.layers import MultiHeadAttention"
+        ],
+        "description": "Import the MultiHeadAttention layer"
+    },
+    "Import Adam": {
+        "prefix": "tfadam",
+        "body": [
+            "from tensorflow.keras.optimizers import Adam"
+        ],
+        "description": "Import the Adam optimizer"
+    },
+    "Import AdamW": {
+        "prefix": "tfadamw",
+        "body": [
+            "from tensorflow.keras.optimizers import AdamW"
+        ],
+        "description": "Import the AdamW optimizer"
+    },
+    "Import SGD": {
+        "prefix": "tfsgd",
+        "body": [
+            "from tensorflow.keras.optimizers import SGD"
+        ],
+        "description": "Import the SGD optimizer"
+    },
+    "Import RMSprop": {
+        "prefix": "tfrmsprop",
+        "body": [
+            "from tensorflow.keras.optimizers import RMSprop"
+        ],
+        "description": "Import the RMSprop optimizer"
+    },
+    "Import Adagrad": {
+        "prefix": "tfadagrad",
+        "body": [
+            "from tensorflow.keras.optimizers import Adagrad"
+        ],
+        "description": "Import the Adagrad optimizer"
+    },
+    "Import Adadelta": {
+        "prefix": "tfadadelta",
+        "body": [
+            "from tensorflow.keras.optimizers import Adadelta"
+        ],
+        "description": "Import the Adadelta optimizer"
+    },
+    "Import Nadam": {
+        "prefix": "tfnadam",
+        "body": [
+            "from tensorflow.keras.optimizers import Nadam"
+        ],
+        "description": "Import the Nadam optimizer"
+    },
+    "Import Ftrl": {
+        "prefix": "tfftrl",
+        "body": [
+            "from tensorflow.keras.optimizers import Ftrl"
+        ],
+        "description": "Import the Ftrl optimizer"
+    },
+    "Import BinaryCrossentropy loss": {
+        "prefix": "tfbcce",
+        "body": [
+            "from tensorflow.keras.losses import BinaryCrossentropy"
+        ],
+        "description": "Import the BinaryCrossentropy loss"
+    },
+    "Import CategoricalCrossentropy loss": {
+        "prefix": "tfcce",
+        "body": [
+            "from tensorflow.keras.losses import CategoricalCrossentropy"
+        ],
+        "description": "Import the CategoricalCrossentropy loss"
+    },
+    "Import SparseCategoricalCrossentropy loss": {
+        "prefix": "tfscc",
+        "body": [
+            "from tensorflow.keras.losses import SparseCategoricalCrossentropy"
+        ],
+        "description": "Import the SparseCategoricalCrossentropy loss"
+    },
+    "Import MeanSquaredError loss": {
+        "prefix": "tfmse",
+        "body": [
+            "from tensorflow.keras.losses import MeanSquaredError"
+        ],
+        "description": "Import the MeanSquaredError loss"
+    },
+    "Import MeanAbsoluteError loss": {
+        "prefix": "tfmae",
+        "body": [
+            "from tensorflow.keras.losses import MeanAbsoluteError"
+        ],
+        "description": "Import the MeanAbsoluteError loss"
+    },
+    "Import Huber loss": {
+        "prefix": "tfhuber",
+        "body": [
+            "from tensorflow.keras.losses import Huber"
+        ],
+        "description": "Import the Huber loss"
+    },
+    "Import Hinge loss": {
+        "prefix": "tfhinge",
+        "body": [
+            "from tensorflow.keras.losses import Hinge"
+        ],
+        "description": "Import the Hinge loss"
+    },
+    "Import KLDivergence loss": {
+        "prefix": "tfkld",
+        "body": [
+            "from tensorflow.keras.losses import KLDivergence"
+        ],
+        "description": "Import the KLDivergence loss"
+    },
+    "Import CosineSimilarity loss": {
+        "prefix": "tfcosine",
+        "body": [
+            "from tensorflow.keras.losses import CosineSimilarity"
+        ],
+        "description": "Import the CosineSimilarity loss"
+    },
+    "Import Loss loss": {
+        "prefix": "tfloss",
+        "body": [
+            "from tensorflow.keras.losses import Loss"
+        ],
+        "description": "Import the Loss loss"
+    },
+    "Import Accuracy metric": {
+        "prefix": "tfaccuracy",
+        "body": [
+            "from tensorflow.keras.metrics import Accuracy"
+        ],
+        "description": "Import the Accuracy metric"
+    },
+    "Import CategoricalAccuracy metric": {
+        "prefix": "tfcaccuracy",
+        "body": [
+            "from tensorflow.keras.metrics import CategoricalAccuracy"
+        ],
+        "description": "Import the CategoricalAccuracy metric"
+    },
+    "Import SparseCategoricalAccuracy metric": {
+        "prefix": "tfsaccuracy",
+        "body": [
+            "from tensorflow.keras.metrics import SparseCategoricalAccuracy"
+        ],
+        "description": "Import the SparseCategoricalAccuracy metric"
+    },
+    "Import Precision metric": {
+        "prefix": "tfprecision",
+        "body": [
+            "from tensorflow.keras.metrics import Precision"
+        ],
+        "description": "Import the Precision metric"
+    },
+    "Import Recall metric": {
+        "prefix": "tfrecall",
+        "body": [
+            "from tensorflow.keras.metrics import Recall"
+        ],
+        "description": "Import the Recall metric"
+    },
+    "Import AUC metric": {
+        "prefix": "tfauc",
+        "body": [
+            "from tensorflow.keras.metrics import AUC"
+        ],
+        "description": "Import the AUC metric"
+    },
+    "Import MeanSquaredError metric": {
+        "prefix": "tfmsemetric",
+        "body": [
+            "from tensorflow.keras.metrics import MeanSquaredError"
+        ],
+        "description": "Import the MeanSquaredError metric"
+    },
+    "Import MeanAbsoluteError metric": {
+        "prefix": "tfmaemetric",
+        "body": [
+            "from tensorflow.keras.metrics import MeanAbsoluteError"
+        ],
+        "description": "Import the MeanAbsoluteError metric"
+    },
+    "Import Metric metric": {
+        "prefix": "tfmetric",
+        "body": [
+            "from tensorflow.keras.metrics import Metric"
+        ],
+        "description": "Import the Metric metric"
+    },
+    "Import F1Score metric": {
+        "prefix": "tff1",
+        "body": [
+            "from tensorflow.keras.metrics import F1Score"
+        ],
+        "description": "Import the F1Score metric"
+    },
+    "Import EarlyStopping callback": {
+        "prefix": "tfearly",
+        "body": [
+            "from tensorflow.keras.callbacks import EarlyStopping"
+        ],
+        "description": "Import the EarlyStopping callback"
+    },
+    "Import ModelCheckpoint callback": {
+        "prefix": "tfmodelcheckpoint",
+        "body": [
+            "from tensorflow.keras.callbacks import ModelCheckpoint"
+        ],
+        "description": "Import the ModelCheckpoint callback"
+    },
+    "Import ReduceLROnPlateau callback": {
+        "prefix": "tfreducelr",
+        "body": [
+            "from tensorflow.keras.callbacks import ReduceLROnPlateau"
+        ],
+        "description": "Import the ReduceLROnPlateau callback"
+    },
+    "Import TensorBoard callback": {
+        "prefix": "tftensorboard",
+        "body": [
+            "from tensorflow.keras.callbacks import TensorBoard"
+        ],
+        "description": "Import the TensorBoard callback"
+    },
+    "Import CSVLogger callback": {
+        "prefix": "tfcsvlogger",
+        "body": [
+            "from tensorflow.keras.callbacks import CSVLogger"
+        ],
+        "description": "Import the CSVLogger callback"
+    },
+    "Import TerminateOnNaN callback": {
+        "prefix": "tfterminate",
+        "body": [
+            "from tensorflow.keras.callbacks import TerminateOnNaN"
+        ],
+        "description": "Import the TerminateOnNaN callback"
+    },
+    "Import Callback callback": {
+        "prefix": "tfcallback",
+        "body": [
+            "from tensorflow.keras.callbacks import Callback"
+        ],
+        "description": "Import the Callback callback"
+    },
+    "Import BackupAndRestore callback": {
+        "prefix": "tfbackup",
+        "body": [
+            "from tensorflow.keras.callbacks import BackupAndRestore"
+        ],
+        "description": "Import the BackupAndRestore callback"
+    },
+    "Import Sequential": {
+        "prefix": "tfsequential",
+        "body": [
+            "from tensorflow.keras.models import Sequential"
+        ],
+        "description": "Import Sequential"
+    },
+    "Import Model": {
+        "prefix": "tfmodel",
+        "body": [
+            "from tensorflow.keras.models import Model"
+        ],
+        "description": "Import Model"
+    },
+    "Import clone_model": {
+        "prefix": "tfclone",
+        "body": [
+            "from tensorflow.keras.models import clone_model"
+        ],
+        "description": "Import clone_model"
+    },
+    "Import load_model": {
+        "prefix": "tfloadmodel",
+        "body": [
+            "from tensorflow.keras.models import load_model"
+        ],
+        "description": "Import load_model"
+    },
+    "Import save_model": {
+        "prefix": "tfsavemodel",
+        "body": [
+            "from tensorflow.keras.models import save_model"
+        ],
+        "description": "Import save_model"
+    },
+    "Import VGG16": {
+        "prefix": "tfvgg16",
+        "body": [
+            "from tensorflow.keras.applications import VGG16"
+        ],
+        "description": "Import the VGG16 application model"
+    },
+    "Import VGG19": {
+        "prefix": "tfvgg19",
+        "body": [
+            "from tensorflow.keras.applications import VGG19"
+        ],
+        "description": "Import the VGG19 application model"
+    },
+    "Import ResNet50": {
+        "prefix": "tfresnet50",
+        "body": [
+            "from tensorflow.keras.applications import ResNet50"
+        ],
+        "description": "Import the ResNet50 application model"
+    },
+    "Import ResNet101": {
+        "prefix": "tfresnet101",
+        "body": [
+            "from tensorflow.keras.applications import ResNet101"
+        ],
+        "description": "Import the ResNet101 application model"
+    },
+    "Import MobileNetV2": {
+        "prefix": "tfmobilev2",
+        "body": [
+            "from tensorflow.keras.applications import MobileNetV2"
+        ],
+        "description": "Import the MobileNetV2 application model"
+    },
+    "Import MobileNetV3Small": {
+        "prefix": "tfmobilev3",
+        "body": [
+            "from tensorflow.keras.applications import MobileNetV3Small"
+        ],
+        "description": "Import the MobileNetV3Small application model"
+    },
+    "Import EfficientNetB0": {
+        "prefix": "tfefficient",
+        "body": [
+            "from tensorflow.keras.applications import EfficientNetB0"
+        ],
+        "description": "Import the EfficientNetB0 application model"
+    },
+    "Import DenseNet121": {
+        "prefix": "tfdensenet",
+        "body": [
+            "from tensorflow.keras.applications import DenseNet121"
+        ],
+        "description": "Import the DenseNet121 application model"
+    },
+    "Import InceptionV3": {
+        "prefix": "tfinception",
+        "body": [
+            "from tensorflow.keras.applications import InceptionV3"
+        ],
+        "description": "Import the InceptionV3 application model"
+    },
+    "Import Xception": {
+        "prefix": "tfxception",
+        "body": [
+            "from tensorflow.keras.applications import Xception"
+        ],
+        "description": "Import the Xception application model"
+    },
+    "Import tensorflow_datasets": {
+        "prefix": "tfds",
+        "body": [
+            "import tensorflow_datasets as tfds"
+        ],
+        "description": "Import TensorFlow Datasets"
+    },
+    "Import pad_sequences": {
+        "prefix": "tfpad",
+        "body": [
+            "from tensorflow.keras.utils import pad_sequences"
+        ],
+        "description": "Import sequence padding utility"
+    },
+    "Import image_dataset_from_directory": {
+        "prefix": "tfimagedataset",
+        "body": [
+            "from tensorflow.keras.utils import image_dataset_from_directory"
+        ],
+        "description": "Create an image dataset from directories"
+    },
+    "Import ImageDataGenerator": {
+        "prefix": "tfimggen",
+        "body": [
+            "from tensorflow.keras.preprocessing.image import ImageDataGenerator"
+        ],
+        "description": "Import the legacy ImageDataGenerator API"
+    },
+    "Import Keras Sequence": {
+        "prefix": "tfsequence",
+        "body": [
+            "from tensorflow.keras.utils import Sequence"
+        ],
+        "description": "Import the Keras Sequence base class"
+    },
+    "Import to_categorical": {
+        "prefix": "tftocategorical",
+        "body": [
+            "from tensorflow.keras.utils import to_categorical"
+        ],
+        "description": "Convert class vectors to one-hot arrays"
+    },
+    "Import Normalization": {
+        "prefix": "tfnormalization",
+        "body": [
+            "from tensorflow.keras.layers import Normalization"
+        ],
+        "description": "Import the Normalization preprocessing layer"
+    },
+    "Import Rescaling": {
+        "prefix": "tfrescaling",
+        "body": [
+            "from tensorflow.keras.layers import Rescaling"
+        ],
+        "description": "Import the Rescaling preprocessing layer"
+    },
+    "Import RandomFlip": {
+        "prefix": "tfaugmentation",
+        "body": [
+            "from tensorflow.keras.layers import RandomFlip"
+        ],
+        "description": "Import the RandomFlip augmentation layer"
+    },
+    "Import Resizing": {
+        "prefix": "tfresizing",
+        "body": [
+            "from tensorflow.keras.layers import Resizing"
+        ],
+        "description": "Import the Resizing preprocessing layer"
+    },
+    "Import GradientTape": {
+        "prefix": "tfgradient",
+        "body": [
+            "from tensorflow import GradientTape"
+        ],
+        "description": "Import GradientTape"
+    },
+    "Import Variable": {
+        "prefix": "tfvariable",
+        "body": [
+            "from tensorflow import Variable"
+        ],
+        "description": "Import Variable"
+    },
+    "Import constant": {
+        "prefix": "tfconstant",
+        "body": [
+            "from tensorflow import constant"
+        ],
+        "description": "Import constant"
+    },
+    "Import cast": {
+        "prefix": "tfcast",
+        "body": [
+            "from tensorflow import cast"
+        ],
+        "description": "Import cast"
+    },
+    "Import function": {
+        "prefix": "tffunction",
+        "body": [
+            "from tensorflow import function"
+        ],
+        "description": "Import function"
+    },
+    "Import SparseTensor": {
+        "prefix": "tfsparse",
+        "body": [
+            "from tensorflow import SparseTensor"
+        ],
+        "description": "Import SparseTensor"
+    },
+    "Import RaggedTensor": {
+        "prefix": "tfragged",
+        "body": [
+            "from tensorflow import RaggedTensor"
+        ],
+        "description": "Import RaggedTensor"
+    },
+    "Import Checkpoint": {
+        "prefix": "tfcheckpoint",
+        "body": [
+            "from tensorflow.train import Checkpoint"
+        ],
+        "description": "Import Checkpoint"
+    },
+    "Import TensorFlow profiler": {
+        "prefix": "tfprofiler",
+        "body": [
+            "from tensorflow.profiler import experimental"
+        ],
+        "description": "Import TensorFlow profiler"
+    },
+    "Import TensorBoard scalar summary": {
+        "prefix": "tfsummary",
+        "body": [
+            "from tensorflow.summary import scalar"
+        ],
+        "description": "Import TensorBoard scalar summary"
+    },
+    "Import TFLiteConverter": {
+        "prefix": "tflite",
+        "body": [
+            "from tensorflow.lite import TFLiteConverter"
+        ],
+        "description": "Import TFLiteConverter"
+    },
+    "Import TFLite Interpreter": {
+        "prefix": "tfinterpreter",
+        "body": [
+            "from tensorflow.lite import Interpreter"
+        ],
+        "description": "Import TFLite Interpreter"
+    },
+    "Import plot_model": {
+        "prefix": "tfplot",
+        "body": [
+            "from tensorflow.keras.utils import plot_model"
+        ],
+        "description": "Import plot_model"
+    },
+    "Import model_to_dot": {
+        "prefix": "tfmodeldot",
+        "body": [
+            "from tensorflow.keras.utils import model_to_dot"
+        ],
+        "description": "Import model_to_dot"
+    },
+    "Import NumPy": {
+        "prefix": "np",
+        "body": [
+            "import numpy as np"
+        ],
+        "description": "Import NumPy"
+    },
+    "Import NumPy load": {
+        "prefix": "npload",
+        "body": [
+            "from numpy import load"
+        ],
+        "description": "Import NumPy load"
+    },
+    "Import NumPy save": {
+        "prefix": "npsave",
+        "body": [
+            "from numpy import save"
+        ],
+        "description": "Import NumPy save"
+    },
+    "Import Pandas": {
+        "prefix": "pd",
+        "body": [
+            "import pandas as pd"
+        ],
+        "description": "Import Pandas"
+    },
+    "Import DataFrame": {
+        "prefix": "pddataframe",
+        "body": [
+            "from pandas import DataFrame"
+        ],
+        "description": "Import DataFrame"
+    },
+    "Import Series": {
+        "prefix": "pdseries",
+        "body": [
+            "from pandas import Series"
+        ],
+        "description": "Import Series"
+    },
+    "Import Matplotlib pyplot": {
+        "prefix": "plt",
+        "body": [
+            "import matplotlib.pyplot as plt"
+        ],
+        "description": "Import Matplotlib pyplot"
+    },
+    "Import Seaborn": {
+        "prefix": "sns",
+        "body": [
+            "import seaborn as sns"
+        ],
+        "description": "Import Seaborn"
+    },
+    "Import Matplotlib": {
+        "prefix": "mpl",
+        "body": [
+            "import matplotlib as mpl"
+        ],
+        "description": "Import Matplotlib"
+    },
+    "Import sklearn metrics": {
+        "prefix": "skmetrics",
+        "body": [
+            "from sklearn import metrics"
+        ],
+        "description": "Import sklearn metrics"
+    },
+    "Import train_test_split": {
+        "prefix": "sksplit",
+        "body": [
+            "from sklearn.model_selection import train_test_split"
+        ],
+        "description": "Import train_test_split"
+    },
+    "Import accuracy_score": {
+        "prefix": "skaccuracy",
+        "body": [
+            "from sklearn.metrics import accuracy_score"
+        ],
+        "description": "Import accuracy_score"
+    },
+    "Import classification_report": {
+        "prefix": "skreport",
+        "body": [
+            "from sklearn.metrics import classification_report"
+        ],
+        "description": "Import classification_report"
+    },
+    "Import confusion_matrix": {
+        "prefix": "skconfusion",
+        "body": [
+            "from sklearn.metrics import confusion_matrix"
+        ],
+        "description": "Import confusion_matrix"
+    },
+    "Import precision_score": {
+        "prefix": "skprecision",
+        "body": [
+            "from sklearn.metrics import precision_score"
+        ],
+        "description": "Import precision_score"
+    },
+    "Import recall_score": {
+        "prefix": "skrecall",
+        "body": [
+            "from sklearn.metrics import recall_score"
+        ],
+        "description": "Import recall_score"
+    },
+    "Import f1_score": {
+        "prefix": "skf1",
+        "body": [
+            "from sklearn.metrics import f1_score"
+        ],
+        "description": "Import f1_score"
+    },
+    "Import StandardScaler": {
+        "prefix": "skscaler",
+        "body": [
+            "from sklearn.preprocessing import StandardScaler"
+        ],
+        "description": "Import StandardScaler"
+    },
+    "Import LabelEncoder": {
+        "prefix": "skencoder",
+        "body": [
+            "from sklearn.preprocessing import LabelEncoder"
+        ],
+        "description": "Import LabelEncoder"
+    },
+    "Import OneHotEncoder": {
+        "prefix": "skonehot",
+        "body": [
+            "from sklearn.preprocessing import OneHotEncoder"
+        ],
+        "description": "Import OneHotEncoder"
+    }
+}

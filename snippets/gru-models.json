@@ -1,0 +1,102 @@
+{
+    "Basic GRU Model": {
+        "prefix": "grumodel",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.GRU($3),",
+            "    layers.Dense($4, activation=\"$5\")",
+            "])"
+        ],
+        "description": "Create a basic GRU Sequential model"
+    },
+    "Stacked GRU": {
+        "prefix": "grustacked",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.GRU($3, return_sequences=True),",
+            "    layers.GRU($4),",
+            "    layers.Dense($5, activation=\"$6\")",
+            "])"
+        ],
+        "description": "Create a stacked GRU model"
+    },
+    "Bidirectional GRU": {
+        "prefix": "grubidir",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.Bidirectional(layers.GRU($3)),",
+            "    layers.Dense($4, activation=\"$5\")",
+            "])"
+        ],
+        "description": "Create a bidirectional GRU model"
+    },
+    "GRU with Sequence Output": {
+        "prefix": "grureturn",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.GRU($3, return_sequences=True),",
+            "    layers.Dense($4, activation=\"$5\")",
+            "])"
+        ],
+        "description": "Create a GRU that returns outputs for all timesteps"
+    },
+    "GRU with State Output": {
+        "prefix": "grustate",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.GRU($3, return_state=True)",
+            "])"
+        ],
+        "description": "Create a GRU layer that returns output and state"
+    },
+    "GRU Encoder": {
+        "prefix": "gruencoder",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.GRU($3, return_sequences=False)",
+            "])"
+        ],
+        "description": "Create a simple GRU encoder that produces a context vector"
+    },
+    "GRU Decoder": {
+        "prefix": "grudecoder",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.GRU($3, return_sequences=True),",
+            "    layers.TimeDistributed(layers.Dense($4, activation=\"$5\"))",
+            "])"
+        ],
+        "description": "Create a sequence-producing GRU decoder"
+    },
+    "GRU Sequence-to-Sequence": {
+        "prefix": "gruseq2seq",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.GRU($3, return_sequences=True),",
+            "    layers.GRU($4, return_sequences=True),",
+            "    layers.TimeDistributed(layers.Dense($5, activation=\"$6\"))",
+            "])"
+        ],
+        "description": "Create a stacked GRU sequence-to-sequence model"
+    },
+    "GRU with Regularization": {
+        "prefix": "gruregularized",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.GRU($3, dropout=$4, recurrent_dropout=$5),",
+            "    layers.Dropout($6),",
+            "    layers.Dense($7, activation=\"$8\")",
+            "])"
+        ],
+        "description": "Create a GRU with dropout regularization"
+    }
+}

@@ -1,0 +1,91 @@
+{
+    "SimpleRNN Model": {
+        "prefix": "rnnmodel",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.SimpleRNN($3),",
+            "    layers.Dense($4, activation=\"$5\")",
+            "])"
+        ],
+        "description": "Create a basic SimpleRNN Sequential model"
+    },
+    "RNN Many-to-One": {
+        "prefix": "rnnmany",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.SimpleRNN($3, return_sequences=False),",
+            "    layers.Dense($4, activation=\"$5\")",
+            "])"
+        ],
+        "description": "Create a many-to-one RNN"
+    },
+    "RNN Many-to-Many": {
+        "prefix": "rnnmanytomany",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.SimpleRNN($3, return_sequences=True),",
+            "    layers.TimeDistributed(layers.Dense($4, activation=\"$5\"))",
+            "])"
+        ],
+        "description": "Create a many-to-many RNN with time-distributed output"
+    },
+    "Stacked SimpleRNN": {
+        "prefix": "rnnstacked",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.SimpleRNN($3, return_sequences=True),",
+            "    layers.SimpleRNN($4),",
+            "    layers.Dense($5, activation=\"$6\")",
+            "])"
+        ],
+        "description": "Create a stacked SimpleRNN model"
+    },
+    "Bidirectional RNN": {
+        "prefix": "rnnbidir",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.Bidirectional(layers.SimpleRNN($3)),",
+            "    layers.Dense($4, activation=\"$5\")",
+            "])"
+        ],
+        "description": "Create a bidirectional SimpleRNN model"
+    },
+    "RNN with Sequence Output": {
+        "prefix": "rnnsequence",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.SimpleRNN($3, return_sequences=True),",
+            "    layers.Dense($4, activation=\"$5\")",
+            "])"
+        ],
+        "description": "Create an RNN that returns an output at every timestep"
+    },
+    "RNN with Dropout": {
+        "prefix": "rnndropout",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1, $2)),",
+            "    layers.SimpleRNN($3, dropout=$4, recurrent_dropout=$5),",
+            "    layers.Dense($6, activation=\"$7\")",
+            "])"
+        ],
+        "description": "Create an RNN with input and recurrent dropout"
+    },
+    "Stateful RNN": {
+        "prefix": "rnnstateful",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(batch_shape=($1, $2, $3)),",
+            "    layers.SimpleRNN($4, stateful=True),",
+            "    layers.Dense($5, activation=\"$6\")",
+            "])"
+        ],
+        "description": "Create a stateful SimpleRNN; batch size must remain fixed"
+    }
+}

@@ -1,0 +1,97 @@
+{
+    "ANN Sequential Model": {
+        "prefix": "annmodel",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1,)),",
+            "    layers.Dense($2, activation=\"relu\"),",
+            "    layers.Dense($3, activation=\"relu\"),",
+            "    layers.Dense($4, activation=\"$5\")",
+            "])"
+        ],
+        "description": "Create a basic ANN Sequential model"
+    },
+    "ANN Binary Classifier": {
+        "prefix": "annbinary",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1,)),",
+            "    layers.Dense($2, activation=\"relu\"),",
+            "    layers.Dense($3, activation=\"relu\"),",
+            "    layers.Dense(1, activation=\"sigmoid\")",
+            "])"
+        ],
+        "description": "Create an ANN for binary classification"
+    },
+    "ANN Multiclass Classifier": {
+        "prefix": "annmulti",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1,)),",
+            "    layers.Dense($2, activation=\"relu\"),",
+            "    layers.Dense($3, activation=\"relu\"),",
+            "    layers.Dense($4, activation=\"softmax\")",
+            "])"
+        ],
+        "description": "Create an ANN for multiclass classification"
+    },
+    "ANN Regression Model": {
+        "prefix": "annregression",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1,)),",
+            "    layers.Dense($2, activation=\"relu\"),",
+            "    layers.Dense($3, activation=\"relu\"),",
+            "    layers.Dense(1)",
+            "])"
+        ],
+        "description": "Create an ANN regression model"
+    },
+    "Deep ANN Model": {
+        "prefix": "anndeep",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1,)),",
+            "    layers.Dense($2, activation=\"relu\"),",
+            "    layers.Dense($3, activation=\"relu\"),",
+            "    layers.Dense($4, activation=\"relu\"),",
+            "    layers.Dense($5, activation=\"$6\")",
+            "])"
+        ],
+        "description": "Create a deep ANN with multiple hidden layers"
+    },
+    "ANN with Dropout and BatchNormalization": {
+        "prefix": "annregularized",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1,)),",
+            "    layers.Dense($2, activation=\"relu\"),",
+            "    layers.BatchNormalization(),",
+            "    layers.Dropout($3),",
+            "    layers.Dense($4, activation=\"relu\"),",
+            "    layers.Dropout($5),",
+            "    layers.Dense($6, activation=\"$7\")",
+            "])"
+        ],
+        "description": "Create an ANN with batch normalization and dropout"
+    },
+    "ANN with L2 Regularization": {
+        "prefix": "annl2",
+        "body": [
+            "model = keras.Sequential([",
+            "    layers.Input(shape=($1,)),",
+            "    layers.Dense($2, activation=\"relu\",",
+            "                 kernel_regularizer=keras.regularizers.l2($3)),",
+            "    layers.Dense($4, activation=\"$5\")",
+            "])"
+        ],
+        "description": "Create an ANN with L2 kernel regularization"
+    },
+    "ANN Output Layer": {
+        "prefix": "annoutput",
+        "body": [
+            "layers.Dense($1, activation=\"$2\")"
+        ],
+        "description": "Insert a configurable ANN output layer"
+    }
+}

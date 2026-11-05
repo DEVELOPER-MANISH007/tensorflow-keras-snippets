@@ -1,0 +1,571 @@
+{
+    "EarlyStopping callback": {
+        "prefix": "util_earlystop",
+        "body": [
+            "early_stopping = keras.callbacks.EarlyStopping(",
+            "    monitor=\"$1\",",
+            "    patience=$2,",
+            "    restore_best_weights=True",
+            ")"
+        ],
+        "description": "Stop training when the monitored metric stops improving"
+    },
+    "ModelCheckpoint callback": {
+        "prefix": "util_checkpoint",
+        "body": [
+            "model_checkpoint = keras.callbacks.ModelCheckpoint(",
+            "    filepath=\"$1\",",
+            "    monitor=\"$2\",",
+            "    save_best_only=True,",
+            "    save_weights_only=$3",
+            ")"
+        ],
+        "description": "Save the best model or weights during training"
+    },
+    "ReduceLROnPlateau callback": {
+        "prefix": "util_reducelr",
+        "body": [
+            "reduce_lr = keras.callbacks.ReduceLROnPlateau(",
+            "    monitor=\"$1\",",
+            "    factor=$2,",
+            "    patience=$3,",
+            "    min_lr=$4",
+            ")"
+        ],
+        "description": "Reduce learning rate when a monitored metric plateaus"
+    },
+    "TensorBoard callback": {
+        "prefix": "util_tensorboard",
+        "body": [
+            "tensorboard = keras.callbacks.TensorBoard(",
+            "    log_dir=\"$1\",",
+            "    histogram_freq=$2",
+            ")"
+        ],
+        "description": "Log training metrics for TensorBoard"
+    },
+    "CSVLogger callback": {
+        "prefix": "util_csvlogger",
+        "body": [
+            "csv_logger = keras.callbacks.CSVLogger(",
+            "    filename=\"$1\",",
+            "    append=$2",
+            ")"
+        ],
+        "description": "Write epoch results to a CSV log"
+    },
+    "BackupAndRestore callback": {
+        "prefix": "util_backuprestore",
+        "body": [
+            "backup_restore = keras.callbacks.BackupAndRestore(",
+            "    backup_dir=\"$1\"",
+            ")"
+        ],
+        "description": "Back up training state and restore it after interruption"
+    },
+    "TerminateOnNaN callback": {
+        "prefix": "util_terminatenan",
+        "body": [
+            "terminate_nan = keras.callbacks.TerminateOnNaN()"
+        ],
+        "description": "Stop training when loss becomes NaN"
+    },
+    "LearningRateScheduler callback": {
+        "prefix": "util_lrscheduler",
+        "body": [
+            "def lr_schedule(epoch, learning_rate):",
+            "    if epoch < $1:",
+            "        return learning_rate",
+            "    return learning_rate * $2",
+            "",
+            "lr_scheduler = keras.callbacks.LearningRateScheduler(lr_schedule)"
+        ],
+        "description": "Apply a custom learning-rate schedule by epoch"
+    },
+    "RemoteMonitor callback": {
+        "prefix": "util_remotemonitor",
+        "body": [
+            "remote_monitor = keras.callbacks.RemoteMonitor(",
+            "    root=\"$1\",",
+            "    path=\"$2\",",
+            "    field=\"$3\"",
+            ")"
+        ],
+        "description": "Send training progress to a remote monitoring endpoint"
+    },
+    "Dropout layer": {
+        "prefix": "util_dropout",
+        "body": [
+            "layers.Dropout(rate=$1)"
+        ],
+        "description": "Add a Dropout layer to reduce overfitting"
+    },
+    "BatchNormalization layer": {
+        "prefix": "util_batchnorm",
+        "body": [
+            "layers.BatchNormalization()"
+        ],
+        "description": "Normalize layer activations within a batch"
+    },
+    "LayerNormalization layer": {
+        "prefix": "util_layernorm",
+        "body": [
+            "layers.LayerNormalization()"
+        ],
+        "description": "Normalize activations across features"
+    },
+    "L1 regularizer": {
+        "prefix": "util_l1",
+        "body": [
+            "keras.regularizers.L1(l1=$1)"
+        ],
+        "description": "Create an L1 weight regularizer"
+    },
+    "L2 regularizer": {
+        "prefix": "util_l2",
+        "body": [
+            "keras.regularizers.L2(l2=$1)"
+        ],
+        "description": "Create an L2 weight regularizer"
+    },
+    "L1L2 regularizer": {
+        "prefix": "util_l1l2",
+        "body": [
+            "keras.regularizers.L1L2(l1=$1, l2=$2)"
+        ],
+        "description": "Create combined L1 and L2 regularization"
+    },
+    "Activity regularizer": {
+        "prefix": "util_activityreg",
+        "body": [
+            "layers.Dense(",
+            "    units=$1,",
+            "    activation=\"$2\",",
+            "    activity_regularizer=keras.regularizers.L2($3)",
+            ")"
+        ],
+        "description": "Add activity regularization to a Dense layer"
+    },
+    "ExponentialDecay schedule": {
+        "prefix": "util_expdecay",
+        "body": [
+            "lr_schedule = keras.optimizers.schedules.ExponentialDecay(",
+            "    initial_learning_rate=$1,",
+            "    decay_steps=$2,",
+            "    decay_rate=$3,",
+            "    staircase=$4",
+            ")"
+        ],
+        "description": "Create an exponential learning-rate decay schedule"
+    },
+    "PolynomialDecay schedule": {
+        "prefix": "util_polydecay",
+        "body": [
+            "lr_schedule = keras.optimizers.schedules.PolynomialDecay(",
+            "    initial_learning_rate=$1,",
+            "    decay_steps=$2,",
+            "    end_learning_rate=$3,",
+            "    power=$4",
+            ")"
+        ],
+        "description": "Create a polynomial learning-rate decay schedule"
+    },
+    "CosineDecay schedule": {
+        "prefix": "util_cosinedecay",
+        "body": [
+            "lr_schedule = keras.optimizers.schedules.CosineDecay(",
+            "    initial_learning_rate=$1,",
+            "    decay_steps=$2,",
+            "    alpha=$3",
+            ")"
+        ],
+        "description": "Create a cosine learning-rate decay schedule"
+    },
+    "InverseTimeDecay schedule": {
+        "prefix": "util_inversetime",
+        "body": [
+            "lr_schedule = keras.optimizers.schedules.InverseTimeDecay(",
+            "    initial_learning_rate=$1,",
+            "    decay_steps=$2,",
+            "    decay_rate=$3,",
+            "    staircase=$4",
+            ")"
+        ],
+        "description": "Create an inverse-time learning-rate decay schedule"
+    },
+    "PiecewiseConstantDecay schedule": {
+        "prefix": "util_piecewise",
+        "body": [
+            "lr_schedule = keras.optimizers.schedules.PiecewiseConstantDecay(",
+            "    boundaries=[$1, $2],",
+            "    values=[$3, $4, $5]",
+            ")"
+        ],
+        "description": "Create a piecewise constant learning-rate schedule"
+    },
+    "Warmup learning-rate schedule": {
+        "prefix": "util_warmup",
+        "body": [
+            "class WarmUpSchedule(keras.optimizers.schedules.LearningRateSchedule):",
+            "    def __init__(self, peak_learning_rate, warmup_steps):",
+            "        self.peak_learning_rate = peak_learning_rate",
+            "        self.warmup_steps = warmup_steps",
+            "",
+            "    def __call__(self, step):",
+            "        step = keras.ops.cast(step, \"float32\")",
+            "        warmup_steps = keras.ops.cast(self.warmup_steps, \"float32\")",
+            "        return self.peak_learning_rate * keras.ops.minimum(",
+            "            1.0, step / warmup_steps",
+            "        )",
+            "",
+            "lr_schedule = WarmUpSchedule(",
+            "    peak_learning_rate=$1,",
+            "    warmup_steps=$2",
+            ")"
+        ],
+        "description": "Create a simple linear warmup learning-rate schedule"
+    },
+    "RandomFlip augmentation": {
+        "prefix": "util_randomflip",
+        "body": [
+            "layers.RandomFlip(mode=\"$1\")"
+        ],
+        "description": "Randomly flip images horizontally or vertically"
+    },
+    "RandomRotation augmentation": {
+        "prefix": "util_randomrotation",
+        "body": [
+            "layers.RandomRotation(factor=$1)"
+        ],
+        "description": "Randomly rotate images during training"
+    },
+    "RandomZoom augmentation": {
+        "prefix": "util_randomzoom",
+        "body": [
+            "layers.RandomZoom(height_factor=$1, width_factor=$2)"
+        ],
+        "description": "Randomly zoom images during training"
+    },
+    "RandomCrop augmentation": {
+        "prefix": "util_randomcrop",
+        "body": [
+            "layers.RandomCrop(height=$1, width=$2)"
+        ],
+        "description": "Randomly crop images to a target size"
+    },
+    "RandomContrast augmentation": {
+        "prefix": "util_randomcontrast",
+        "body": [
+            "layers.RandomContrast(factor=$1)"
+        ],
+        "description": "Randomly adjust image contrast"
+    },
+    "RandomTranslation augmentation": {
+        "prefix": "util_randomtranslation",
+        "body": [
+            "layers.RandomTranslation(",
+            "    height_factor=$1,",
+            "    width_factor=$2",
+            ")"
+        ],
+        "description": "Randomly translate images during training"
+    },
+    "RandomBrightness augmentation": {
+        "prefix": "util_randombrightness",
+        "body": [
+            "layers.RandomBrightness(factor=$1)"
+        ],
+        "description": "Randomly adjust image brightness"
+    },
+    "RandomHeight augmentation": {
+        "prefix": "util_randomheight",
+        "body": [
+            "layers.RandomHeight(factor=$1)"
+        ],
+        "description": "Randomly adjust image height"
+    },
+    "RandomWidth augmentation": {
+        "prefix": "util_randomwidth",
+        "body": [
+            "layers.RandomWidth(factor=$1)"
+        ],
+        "description": "Randomly adjust image width"
+    },
+    "Confusion matrix": {
+        "prefix": "util_confusionmatrix",
+        "body": [
+            "from sklearn.metrics import confusion_matrix",
+            "",
+            "y_pred = model.predict($1)",
+            "y_pred_labels = y_pred.argmax(axis=1) if y_pred.ndim > 1 and y_pred.shape[1] > 1 else (y_pred.ravel() >= 0.5).astype(int)",
+            "cm = confusion_matrix($2, y_pred_labels)"
+        ],
+        "description": "Calculate a confusion matrix from model predictions"
+    },
+    "Classification report": {
+        "prefix": "util_classreport",
+        "body": [
+            "from sklearn.metrics import classification_report",
+            "",
+            "y_pred = model.predict($1)",
+            "y_pred_labels = y_pred.argmax(axis=1) if y_pred.ndim > 1 and y_pred.shape[1] > 1 else (y_pred.ravel() >= 0.5).astype(int)",
+            "print(classification_report($2, y_pred_labels))"
+        ],
+        "description": "Generate a precision, recall and F1 classification report"
+    },
+    "ROC-AUC score": {
+        "prefix": "util_rocauc",
+        "body": [
+            "from sklearn.metrics import roc_auc_score",
+            "",
+            "y_score = model.predict($1)",
+            "if y_score.ndim > 1 and y_score.shape[1] == 2:",
+            "    y_score = y_score[:, 1]",
+            "score = roc_auc_score($2, y_score)"
+        ],
+        "description": "Calculate ROC-AUC using predicted probabilities or scores"
+    },
+    "Precision-recall curve": {
+        "prefix": "util_prcurve",
+        "body": [
+            "from sklearn.metrics import precision_recall_curve",
+            "import matplotlib.pyplot as plt",
+            "",
+            "y_score = model.predict($1).ravel()",
+            "precision, recall, thresholds = precision_recall_curve($2, y_score)",
+            "plt.plot(recall, precision)",
+            "plt.xlabel(\"Recall\")",
+            "plt.ylabel(\"Precision\")",
+            "plt.title(\"Precision-Recall Curve\")",
+            "plt.show()"
+        ],
+        "description": "Plot a precision-recall curve for binary classification"
+    },
+    "Residual plot": {
+        "prefix": "util_residualplot",
+        "body": [
+            "import matplotlib.pyplot as plt",
+            "",
+            "y_pred = model.predict($1).ravel()",
+            "residuals = $2 - y_pred",
+            "plt.scatter(y_pred, residuals)",
+            "plt.axhline(y=0, linestyle=\"--\")",
+            "plt.xlabel(\"Predicted values\")",
+            "plt.ylabel(\"Residuals\")",
+            "plt.title(\"Residual Plot\")",
+            "plt.show()"
+        ],
+        "description": "Plot residuals for a regression model"
+    },
+    "Save complete model": {
+        "prefix": "util_savemodel",
+        "body": [
+            "model.save(\"$1.keras\")"
+        ],
+        "description": "Save the complete Keras model in the native .keras format"
+    },
+    "Load complete model": {
+        "prefix": "util_loadmodel",
+        "body": [
+            "model = keras.models.load_model(\"$1.keras\")"
+        ],
+        "description": "Load a saved Keras model"
+    },
+    "Save model weights": {
+        "prefix": "util_saveweights",
+        "body": [
+            "model.save_weights(\"$1.weights.h5\")"
+        ],
+        "description": "Save model weights in the Keras weights format"
+    },
+    "Load model weights": {
+        "prefix": "util_loadweights",
+        "body": [
+            "model.load_weights(\"$1.weights.h5\")"
+        ],
+        "description": "Load previously saved model weights"
+    },
+    "Convert model to TFLite": {
+        "prefix": "util_tfliteconvert",
+        "body": [
+            "converter = tf.lite.TFLiteConverter.from_keras_model(model)",
+            "tflite_model = converter.convert()",
+            "",
+            "with open(\"$1.tflite\", \"wb\") as file:",
+            "    file.write(tflite_model)"
+        ],
+        "description": "Convert a Keras model to TensorFlow Lite"
+    },
+    "Print model summary": {
+        "prefix": "util_modelsummary",
+        "body": [
+            "model.summary()"
+        ],
+        "description": "Display the model architecture and parameter counts"
+    },
+    "Plot model architecture": {
+        "prefix": "util_plotmodel",
+        "body": [
+            "keras.utils.plot_model(",
+            "    model,",
+            "    to_file=\"$1.png\",",
+            "    show_shapes=True,",
+            "    show_layer_names=True",
+            ")"
+        ],
+        "description": "Export a visual diagram of the Keras model"
+    },
+    "Mixed precision policy": {
+        "prefix": "util_mixedprecision",
+        "body": [
+            "keras.mixed_precision.set_global_policy(\"$1\")"
+        ],
+        "description": "Enable a mixed-precision policy such as mixed_float16"
+    },
+    "Gradient clipping optimizer": {
+        "prefix": "util_gradientclip",
+        "body": [
+            "optimizer = keras.optimizers.Adam(",
+            "    learning_rate=$1,",
+            "    clipnorm=$2",
+            ")"
+        ],
+        "description": "Configure gradient clipping by global norm on an optimizer"
+    },
+    "GradientTape custom step": {
+        "prefix": "util_gradienttape",
+        "body": [
+            "with tf.GradientTape() as tape:",
+            "    predictions = model($1, training=True)",
+            "    loss = loss_fn($2, predictions)",
+            "",
+            "gradients = tape.gradient(loss, model.trainable_variables)",
+            "optimizer.apply_gradients(zip(gradients, model.trainable_variables))"
+        ],
+        "description": "Calculate and apply gradients using GradientTape"
+    },
+    "Gradient accumulation note": {
+        "prefix": "util_gradaccum",
+        "body": [
+            "# Gradient accumulation requires a custom training loop.",
+            "# Accumulate gradients over $1 micro-batches before applying an update.",
+            "accumulation_steps = $1",
+            "gradient_accumulators = [",
+            "    tf.Variable(tf.zeros_like(variable), trainable=False)",
+            "    for variable in model.trainable_variables",
+            "]"
+        ],
+        "description": "Set up gradient accumulator variables for a custom training loop"
+    },
+    "Class weights": {
+        "prefix": "util_classweights",
+        "body": [
+            "from sklearn.utils.class_weight import compute_class_weight",
+            "import numpy as np",
+            "",
+            "classes = np.unique($1)",
+            "weights = compute_class_weight(",
+            "    class_weight=\"balanced\",",
+            "    classes=classes,",
+            "    y=$1",
+            ")",
+            "class_weights = dict(zip(classes, weights))"
+        ],
+        "description": "Calculate balanced class weights for imbalanced classification"
+    },
+    "Sample weights fit": {
+        "prefix": "util_sampleweights",
+        "body": [
+            "history = model.fit(",
+            "    $1,",
+            "    $2,",
+            "    sample_weight=$3,",
+            "    epochs=$4,",
+            "    batch_size=$5",
+            ")"
+        ],
+        "description": "Train a model using per-sample weights"
+    },
+    "Set random seeds": {
+        "prefix": "util_seedsetup",
+        "body": [
+            "import random",
+            "import numpy as np",
+            "import tensorflow as tf",
+            "",
+            "seed = $1",
+            "random.seed(seed)",
+            "np.random.seed(seed)",
+            "tf.keras.utils.set_random_seed(seed)"
+        ],
+        "description": "Set Python, NumPy and TensorFlow random seeds"
+    },
+    "Dataset shuffle": {
+        "prefix": "util_datasetshuffle",
+        "body": [
+            "dataset = dataset.shuffle(",
+            "    buffer_size=$1,",
+            "    seed=$2,",
+            "    reshuffle_each_iteration=True",
+            ")"
+        ],
+        "description": "Shuffle a tf.data dataset"
+    },
+    "Dataset batch": {
+        "prefix": "util_datasetbatch",
+        "body": [
+            "dataset = dataset.batch($1)"
+        ],
+        "description": "Batch a tf.data dataset"
+    },
+    "Dataset cache": {
+        "prefix": "util_datasetcache",
+        "body": [
+            "dataset = dataset.cache()"
+        ],
+        "description": "Cache a dataset in memory"
+    },
+    "Dataset prefetch": {
+        "prefix": "util_datasetprefetch",
+        "body": [
+            "dataset = dataset.prefetch(tf.data.AUTOTUNE)"
+        ],
+        "description": "Prefetch batches to overlap input processing and model execution"
+    },
+    "Dataset map": {
+        "prefix": "util_datasetmap",
+        "body": [
+            "dataset = dataset.map(",
+            "    $1,",
+            "    num_parallel_calls=tf.data.AUTOTUNE",
+            ")"
+        ],
+        "description": "Map a preprocessing function over a dataset in parallel"
+    },
+    "Dataset repeat": {
+        "prefix": "util_datasetrepeat",
+        "body": [
+            "dataset = dataset.repeat($1)"
+        ],
+        "description": "Repeat a dataset a specified number of times"
+    },
+    "Dataset parallel pipeline": {
+        "prefix": "util_datasetparallel",
+        "body": [
+            "dataset = (",
+            "    dataset",
+            "    .map($1, num_parallel_calls=tf.data.AUTOTUNE)",
+            "    .batch($2)",
+            "    .prefetch(tf.data.AUTOTUNE)",
+            ")"
+        ],
+        "description": "Build a parallel tf.data preprocessing, batching and prefetch pipeline"
+    },
+    "Dataset zip": {
+        "prefix": "util_datasetzip",
+        "body": [
+            "dataset = tf.data.Dataset.zip(($1, $2))"
+        ],
+        "description": "Zip two datasets together"
+    }
+}

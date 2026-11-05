@@ -23,36 +23,44 @@
   "categories": [
     "Snippets"
   ],
-  "contributes": {
-    "snippets": [
-      {
-        "language": "python",
-        "path": "./snippets/python.json"
-      },
-      {
-        "language": "python",
-        "path": "./snippets/datasets.json"
-      },
-      {
-        "language": "python",
-        "path": "./snippets/computer-vision.json"
-      },
-      {
-        "language": "python",
-        "path": "./snippets/training.json"
-      },
-      {
-        "language": "python",
-        "path": "./snippets/nlp-time-series.json"
-      },
-      {
-        "language": "python",
-        "path": "./snippets/advanced.json"
-      },
-      {
-        "language": "python",
-        "path": "./snippets/transfer-learning.json"
-      }
-    ]
-  }
+ "contributes": {
+  "snippets": [
+    {
+      "language": "python",
+      "path": "./snippets/imports.json"
+    },
+    {
+      "language": "python",
+      "path": "./snippets/ann-models.json"
+    },
+    {
+      "language": "python",
+      "path": "./snippets/cnn-models.json"
+    },
+    {
+      "language": "python",
+      "path": "./snippets/rnn-models.json"
+    },
+    {
+      "language": "python",
+      "path": "./snippets/lstm-models.json"
+    },
+    {
+      "language": "python",
+      "path": "./snippets/gru-models.json"
+    },
+    {
+      "language": "python",
+      "path": "./snippets/model-training.json"
+    },
+    {
+      "language": "python",
+      "path": "./snippets/utilities.json"
+    },
+    {
+      "language": "python",
+      "path": "./snippets/advanced.json"
+}
+  ]
+}
 }
